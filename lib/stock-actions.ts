@@ -22,7 +22,6 @@ export async function getMarketOverviewAction(): Promise<{
 }> {
   try {
     const data = await getMarketSummary();
-    console.log("getMarketSummary:", data);
     return { success: true, data };
   } catch (error) {
     try {
@@ -43,12 +42,11 @@ export async function getMarketOverviewAction(): Promise<{
 // Server action to get stock quote
 export async function getStockQuoteAction(symbol: string): Promise<{
   success: boolean;
-  data?: YahooQuote;
+  data?: any;
   error?: APIError;
 }> {
   try {
     const data = await getQuote(symbol);
-    console.log("getQuote:", data);
     return { success: true, data };
   } catch (error) {
     try {
@@ -79,7 +77,6 @@ export async function getHistoricalDataAction(
 }> {
   try {
     const data = await getHistoricalData(symbol, period1, period2, interval);
-    console.log("getHistoricalData:", data);
     return { success: true, data };
   } catch (error) {
     try {
@@ -110,7 +107,6 @@ export async function getSMAAction(
     // Get historical data first
     const historicalData = await getHistoricalData(symbol);
     const data = calculateSMA(historicalData, period);
-    console.log("getSMA:", data);
     return { success: true, data };
   } catch (error) {
     try {
@@ -141,7 +137,7 @@ export async function getRSIAction(
     // Get historical data first
     const historicalData = await getHistoricalData(symbol);
     const data = calculateRSI(historicalData, period);
-    console.log("getRSI:", data);
+
     return { success: true, data };
   } catch (error) {
     try {
@@ -167,7 +163,6 @@ export async function getCompanyOverviewAction(symbol: string): Promise<{
 }> {
   try {
     const data = await getCompanyProfile(symbol);
-    console.log("getCompanyProfile:", data);
     return { success: true, data };
   } catch (error) {
     try {

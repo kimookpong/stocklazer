@@ -75,24 +75,16 @@ export default function StockDashboard({ symbol }: StockDashboardProps) {
         getRSIAction(symbol),
       ]);
 
-      console.log("API Results:", {
-        quoteResult,
-        historicalResult,
-        companyResult,
-        smaResult,
-        rsiResult,
-      });
-
       // Check if any request failed
       if (!quoteResult.success || !historicalResult.success) {
         const error = quoteResult.error || historicalResult.error;
         if (error) {
           setError(error);
         }
-        // Use mock data as fallback
-        generateMockData();
       } else {
         // Use real data
+
+        console.log("Fetched stock data:", quoteResult.data);
         setStockData(quoteResult.data);
         setHistoricalData(historicalResult.data);
         setCompanyData(companyResult.success ? companyResult.data : null);
@@ -105,139 +97,9 @@ export default function StockDashboard({ symbol }: StockDashboardProps) {
         type: "UNKNOWN",
         message: "เกิดข้อผิดพลาดที่ไม่ทราบสาเหตุ กรุณาลองใหม่อีกครั้ง",
       });
-      generateMockData();
     } finally {
       setLoading(false);
     }
-  };
-
-  const generateMockData = () => {
-    const basePrice = Math.random() * 500 + 50;
-    const change = (Math.random() - 0.5) * 20;
-    const changePercent = (change / basePrice) * 100;
-
-    setStockData({
-      symbol: symbol,
-      regularMarketPrice: basePrice,
-      regularMarketOpen: basePrice - Math.random() * 10,
-      regularMarketDayHigh: basePrice + Math.random() * 15,
-      regularMarketDayLow: basePrice - Math.random() * 15,
-      regularMarketVolume: Math.floor(Math.random() * 10000000 + 1000000),
-      regularMarketPreviousClose: basePrice - change,
-      regularMarketChange: change,
-      regularMarketChangePercent: changePercent,
-      shortName: `${symbol} Corporation`,
-      longName: `${symbol} Corporation`,
-    });
-
-    // Generate mock historical data as array
-    const mockHistoricalData = [];
-    for (let i = 0; i < 100; i++) {
-      const date = new Date();
-      date.setDate(date.getDate() - i);
-
-      const dayPrice = basePrice + (Math.random() - 0.5) * 50;
-      mockHistoricalData.push({
-        date: date,
-        open: dayPrice + (Math.random() - 0.5) * 5,
-        high: dayPrice + Math.random() * 10,
-        low: dayPrice - Math.random() * 10,
-        close: dayPrice,
-        adjClose: dayPrice,
-        volume: Math.floor(Math.random() * 5000000 + 500000),
-      });
-    }
-
-    setHistoricalData(mockHistoricalData);
-
-    // Generate mock company data
-    setCompanyData({
-      Symbol: symbol,
-      Name: `${symbol} Corporation`,
-      Description: `Mock company data for ${symbol}. This is demonstration data.`,
-      MarketCapitalization: (
-        Math.random() * 1000000000000 +
-        10000000000
-      ).toString(),
-      PERatio: (Math.random() * 30 + 5).toFixed(2),
-      PEGRatio: (Math.random() * 2 + 0.5).toFixed(2),
-      BookValue: (Math.random() * 50 + 5).toFixed(2),
-      DividendPerShare: (Math.random() * 5).toFixed(2),
-      DividendYield: (Math.random() * 0.05).toFixed(4),
-      EPS: (Math.random() * 10 + 1).toFixed(2),
-      RevenuePerShareTTM: (Math.random() * 100 + 10).toFixed(2),
-      ProfitMargin: (Math.random() * 0.3).toFixed(4),
-      OperatingMarginTTM: (Math.random() * 0.25).toFixed(4),
-      ReturnOnAssetsTTM: (Math.random() * 0.15).toFixed(4),
-      ReturnOnEquityTTM: (Math.random() * 0.25).toFixed(4),
-      RevenueTTM: (Math.random() * 100000000000 + 1000000000).toString(),
-      GrossProfitTTM: (Math.random() * 50000000000 + 500000000).toString(),
-      DilutedEPSTTM: (Math.random() * 10 + 1).toFixed(2),
-      QuarterlyEarningsGrowthYOY: (Math.random() * 0.5 - 0.1).toFixed(4),
-      QuarterlyRevenueGrowthYOY: (Math.random() * 0.3 - 0.05).toFixed(4),
-      AnalystTargetPrice: (
-        basePrice *
-        (1 + (Math.random() - 0.5) * 0.3)
-      ).toFixed(2),
-      TrailingPE: (Math.random() * 25 + 8).toFixed(2),
-      ForwardPE: (Math.random() * 20 + 6).toFixed(2),
-      PriceToSalesRatioTTM: (Math.random() * 10 + 1).toFixed(2),
-      PriceToBookRatio: (Math.random() * 5 + 0.5).toFixed(2),
-      EVToRevenue: (Math.random() * 8 + 1).toFixed(2),
-      EVToEBITDA: (Math.random() * 15 + 5).toFixed(2),
-      Beta: (Math.random() * 2 + 0.5).toFixed(2),
-      "52WeekHigh": (basePrice * 1.3).toFixed(2),
-      "52WeekLow": (basePrice * 0.7).toFixed(2),
-      "50DayMovingAverage": (
-        basePrice *
-        (1 + (Math.random() - 0.5) * 0.1)
-      ).toFixed(2),
-      "200DayMovingAverage": (
-        basePrice *
-        (1 + (Math.random() - 0.5) * 0.2)
-      ).toFixed(2),
-      SharesOutstanding: Math.floor(
-        Math.random() * 5000000000 + 100000000
-      ).toString(),
-      DividendDate: new Date(
-        Date.now() - Math.random() * 90 * 24 * 60 * 60 * 1000
-      )
-        .toISOString()
-        .split("T")[0],
-      ExDividendDate: new Date(
-        Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000
-      )
-        .toISOString()
-        .split("T")[0],
-    });
-
-    // Generate mock SMA data
-    const mockSMAData = [];
-    for (let i = 19; i < 100; i++) {
-      // Start from 19 because we need 20 data points for 20-day SMA
-      const date = new Date();
-      date.setDate(date.getDate() - (100 - i));
-      const smaValue = basePrice + (Math.random() - 0.5) * 30;
-      mockSMAData.push({
-        date: date.toISOString().split("T")[0],
-        value: smaValue,
-      });
-    }
-    setSmaData(mockSMAData);
-
-    // Generate mock RSI data
-    const mockRSIData = [];
-    for (let i = 13; i < 100; i++) {
-      // Start from 13 because we need 14 data points for 14-day RSI
-      const date = new Date();
-      date.setDate(date.getDate() - (100 - i));
-      const rsiValue = Math.random() * 100;
-      mockRSIData.push({
-        date: date.toISOString().split("T")[0],
-        value: rsiValue,
-      });
-    }
-    setRsiData(mockRSIData);
   };
 
   useEffect(() => {
@@ -429,6 +291,8 @@ export default function StockDashboard({ symbol }: StockDashboardProps) {
     ? calculateSupportResistance(historicalData)
     : { support: currentPrice * 0.9, resistance: currentPrice * 1.1 };
 
+  console.log("companyData:", companyData);
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -447,15 +311,15 @@ export default function StockDashboard({ symbol }: StockDashboardProps) {
               )}
             </h1>
             <p className="text-muted-foreground">
-              {companyData?.Name || `${symbol} Corporation`}
+              {companyData?.quote.longName || `${symbol} Corporation`}
             </p>
           </div>
         </div>
         <ShareButton
           symbol={symbol}
           companyName={
-            companyData?.longName ||
-            companyData?.shortName ||
+            companyData?.quote.longName ||
+            companyData?.quote.shortName ||
             `${symbol} Corporation`
           }
         />
@@ -550,7 +414,7 @@ export default function StockDashboard({ symbol }: StockDashboardProps) {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {formatMarketCap(companyData.marketCap)}
+              {formatMarketCap(stockData.marketCap)}
             </div>
             <div className="text-sm text-muted-foreground">มูลค่าตลาด</div>
           </CardContent>
@@ -569,9 +433,6 @@ export default function StockDashboard({ symbol }: StockDashboardProps) {
           <Card>
             <CardHeader>
               <CardTitle>กราฟราคาหุ้น {symbol}</CardTitle>
-              <CardDescription>
-                ข้อมูลราคาหุ้นย้อนหลัง 100 วัน {!isRealData && "(ข้อมูลจำลอง)"}
-              </CardDescription>
             </CardHeader>
             <CardContent>
               {historicalData && (
@@ -601,17 +462,18 @@ export default function StockDashboard({ symbol }: StockDashboardProps) {
                   <div>
                     <h4 className="font-semibold mb-2">คำอธิบาย</h4>
                     <p className="text-sm text-muted-foreground">
-                      {companyData.description || "ไม่มีข้อมูลคำอธิบาย"}
+                      {companyData.quoteSummary.assetProfile
+                        .longBusinessSummary || "ไม่มีข้อมูลคำอธิบาย"}
                     </p>
                   </div>
-                  {companyData.sector && (
+                  {companyData.quoteSummary.assetProfile.sector && (
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       <div>
                         <span className="text-muted-foreground">
                           ภาคธุรกิจ:
                         </span>
                         <div className="font-semibold">
-                          {companyData.sector}
+                          {companyData.quoteSummary.assetProfile.sector}
                         </div>
                       </div>
                       <div>
@@ -619,7 +481,7 @@ export default function StockDashboard({ symbol }: StockDashboardProps) {
                           อุตสาหกรรม:
                         </span>
                         <div className="font-semibold">
-                          {companyData.industry}
+                          {companyData.quoteSummary.assetProfile.industry}
                         </div>
                       </div>
                     </div>
@@ -628,29 +490,29 @@ export default function StockDashboard({ symbol }: StockDashboardProps) {
                     <div>
                       <span className="text-muted-foreground">Market Cap:</span>
                       <div className="font-semibold">
-                        {formatMarketCap(companyData.marketCap)}
+                        {formatMarketCap(stockData.marketCap)}
                       </div>
                     </div>
                     <div>
                       <span className="text-muted-foreground">พนักงาน:</span>
                       <div className="font-semibold">
-                        {companyData.employees
-                          ? companyData.employees.toLocaleString()
+                        {companyData.quoteSummary.assetProfile.fullTimeEmployees
+                          ? companyData.quoteSummary.assetProfile.fullTimeEmployees.toLocaleString()
                           : "N/A"}
                       </div>
                     </div>
                   </div>
-                  {companyData.website && (
+                  {companyData.quoteSummary.assetProfile.website && (
                     <div>
                       <span className="text-muted-foreground">เว็บไซต์:</span>
                       <div className="font-semibold">
                         <a
-                          href={companyData.website}
+                          href={companyData.quoteSummary.assetProfile.website}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
                         >
-                          {companyData.website}
+                          {companyData.quoteSummary.assetProfile.website}
                         </a>
                       </div>
                     </div>
@@ -853,8 +715,8 @@ export default function StockDashboard({ symbol }: StockDashboardProps) {
                             P/B Ratio:
                           </span>
                           <div className="font-semibold">
-                            {companyData.priceToBook
-                              ? companyData.priceToBook.toFixed(2)
+                            {stockData.priceToBook
+                              ? stockData.priceToBook.toFixed(2)
                               : "N/A"}
                           </div>
                         </div>
@@ -994,20 +856,20 @@ export default function StockDashboard({ symbol }: StockDashboardProps) {
                             <span className="font-medium text-sm">
                               PS Ratio
                             </span>
-                            {companyData.marketCap &&
+                            {stockData.marketCap &&
                               companyData.totalRevenue && (
                                 <Badge
                                   variant="outline"
                                   className={(() => {
                                     const psRatio =
-                                      companyData.marketCap /
+                                      stockData.marketCap /
                                       companyData.totalRevenue;
                                     return evaluatePSRatio(psRatio).color;
                                   })()}
                                 >
                                   {(() => {
                                     const psRatio =
-                                      companyData.marketCap /
+                                      stockData.marketCap /
                                       companyData.totalRevenue;
                                     return evaluatePSRatio(psRatio).level;
                                   })()}
@@ -1015,10 +877,9 @@ export default function StockDashboard({ symbol }: StockDashboardProps) {
                               )}
                           </div>
                           <div className="text-xl font-bold">
-                            {companyData.marketCap && companyData.totalRevenue
+                            {stockData.marketCap && companyData.totalRevenue
                               ? `${(
-                                  companyData.marketCap /
-                                  companyData.totalRevenue
+                                  stockData.marketCap / companyData.totalRevenue
                                 ).toFixed(2)}x`
                               : "N/A"}
                           </div>
@@ -1089,29 +950,27 @@ export default function StockDashboard({ symbol }: StockDashboardProps) {
                         <span className="font-semibold">
                           P/S Ratio (อัตราส่วนราคาต่อยอดขาย)
                         </span>
-                        {companyData.marketCap && companyData.totalRevenue && (
+                        {stockData.marketCap && companyData.totalRevenue && (
                           <Badge
                             variant="outline"
                             className={(() => {
                               const psRatio =
-                                companyData.marketCap /
-                                companyData.totalRevenue;
+                                stockData.marketCap / companyData.totalRevenue;
                               return evaluatePSRatio(psRatio).color;
                             })()}
                           >
                             {(() => {
                               const psRatio =
-                                companyData.marketCap /
-                                companyData.totalRevenue;
+                                stockData.marketCap / companyData.totalRevenue;
                               return evaluatePSRatio(psRatio).level;
                             })()}
                           </Badge>
                         )}
                       </div>
                       <div className="text-2xl font-bold mb-1">
-                        {companyData.marketCap && companyData.totalRevenue
+                        {stockData.marketCap && companyData.totalRevenue
                           ? `${(
-                              companyData.marketCap / companyData.totalRevenue
+                              stockData.marketCap / companyData.totalRevenue
                             ).toFixed(2)}x`
                           : "N/A"}
                       </div>
@@ -1413,8 +1272,8 @@ export default function StockDashboard({ symbol }: StockDashboardProps) {
                           Market Cap:
                         </span>
                         <div className="font-semibold">
-                          {companyData.marketCap
-                            ? formatMarketCap(companyData.marketCap)
+                          {stockData.marketCap
+                            ? formatMarketCap(stockData.marketCap)
                             : "N/A"}
                         </div>
                       </div>
@@ -1852,8 +1711,8 @@ export default function StockDashboard({ symbol }: StockDashboardProps) {
                   }
 
                   // PS Ratio Score (15%)
-                  if (companyData.marketCap && companyData.totalRevenue) {
-                    const ps = companyData.marketCap / companyData.totalRevenue;
+                  if (stockData.marketCap && companyData.totalRevenue) {
+                    const ps = stockData.marketCap / companyData.totalRevenue;
                     let score = 0;
                     if (ps < 2) score = 90;
                     else if (ps <= 5) score = 80;

@@ -176,37 +176,14 @@ export async function getMarketSummary(): Promise<YahooMarketSummary> {
 }
 
 // Get real-time quote
-export async function getQuote(symbol: string): Promise<YahooQuote> {
+export async function getQuote(symbol: string): Promise<any> {
   try {
     const quote = await yahooFinance.quote(symbol);
 
     if (!quote || !quote.regularMarketPrice) {
       throw new Error(`ไม่พบข้อมูลหุ้น ${symbol}`);
     }
-
-    return {
-      symbol: quote.symbol || symbol,
-      regularMarketPrice: quote.regularMarketPrice || 0,
-      regularMarketPreviousClose: quote.regularMarketPreviousClose || 0,
-      regularMarketOpen: quote.regularMarketOpen || 0,
-      regularMarketDayHigh: quote.regularMarketDayHigh || 0,
-      regularMarketDayLow: quote.regularMarketDayLow || 0,
-      regularMarketVolume: quote.regularMarketVolume || 0,
-      regularMarketChange: quote.regularMarketChange || 0,
-      regularMarketChangePercent: quote.regularMarketChangePercent || 0,
-      marketCap: quote.marketCap || undefined,
-      trailingPE: quote.trailingPE || undefined,
-      forwardPE: quote.forwardPE || undefined,
-      dividendYield: quote.dividendYield || undefined,
-      beta: quote.beta || undefined,
-      fiftyTwoWeekHigh: quote.fiftyTwoWeekHigh || undefined,
-      fiftyTwoWeekLow: quote.fiftyTwoWeekLow || undefined,
-      averageVolume: quote.averageVolume || undefined,
-      shortName: quote.shortName || symbol,
-      longName: quote.longName || quote.shortName || symbol,
-      currency: quote.currency || "USD",
-      exchangeName: quote.fullExchangeName || "Unknown",
-    };
+    return quote;
   } catch (error) {
     throw new Error(JSON.stringify(createAPIError(error)));
   }
@@ -318,159 +295,7 @@ export async function getCompanyProfile(symbol: string) {
       }),
     ]);
 
-    const profile = quoteSummary.assetProfile || quoteSummary.summaryProfile;
-    const financials = quoteSummary.financialData;
-    const keyStats = quoteSummary.defaultKeyStatistics;
-    const incomeHistory = quoteSummary.incomeStatementHistory;
-    const quarterlyIncome = quoteSummary.incomeStatementHistoryQuarterly;
-    const cashflow = quoteSummary.cashflowStatementHistory;
-    const balanceSheet = quoteSummary.balanceSheetHistory;
-    const earnings = quoteSummary.earnings;
-    const earningsHistory = quoteSummary.earningsHistory;
-
-    // Calculate revenue growth from historical data
-    const calculateRevenueGrowth = () => {
-      if (
-        !incomeHistory?.incomeStatementHistory ||
-        incomeHistory.incomeStatementHistory.length < 2
-      ) {
-        return null;
-      }
-
-      const statements = incomeHistory.incomeStatementHistory;
-      const current = statements[0]?.totalRevenue?.raw;
-      const previous = statements[1]?.totalRevenue?.raw;
-
-      if (!current || !previous) return null;
-
-      return (current - previous) / previous;
-    };
-
-    // Calculate quarterly revenue growth
-    const calculateQuarterlyRevenueGrowth = () => {
-      if (
-        !quarterlyIncome?.incomeStatementHistory ||
-        quarterlyIncome.incomeStatementHistory.length < 4
-      ) {
-        return null;
-      }
-
-      const statements = quarterlyIncome.incomeStatementHistory;
-      const currentQuarter = statements[0]?.totalRevenue?.raw;
-      const yearAgoQuarter = statements[3]?.totalRevenue?.raw; // Same quarter last year
-
-      if (!currentQuarter || !yearAgoQuarter) return null;
-
-      return (currentQuarter - yearAgoQuarter) / yearAgoQuarter;
-    };
-
-    // Get latest revenue data
-    const getLatestRevenue = () => {
-      if (
-        !incomeHistory?.incomeStatementHistory ||
-        incomeHistory.incomeStatementHistory.length === 0
-      ) {
-        return null;
-      }
-
-      return incomeHistory.incomeStatementHistory[0]?.totalRevenue?.raw;
-    };
-
-    // Get latest net income
-    const getLatestNetIncome = () => {
-      if (
-        !incomeHistory?.incomeStatementHistory ||
-        incomeHistory.incomeStatementHistory.length === 0
-      ) {
-        return null;
-      }
-
-      return incomeHistory.incomeStatementHistory[0]?.netIncome?.raw;
-    };
-
-    // Get latest gross profit
-    const getLatestGrossProfit = () => {
-      if (
-        !incomeHistory?.incomeStatementHistory ||
-        incomeHistory.incomeStatementHistory.length === 0
-      ) {
-        return null;
-      }
-
-      return incomeHistory.incomeStatementHistory[0]?.grossProfit?.raw;
-    };
-
-    // Calculate profit margins
-    const calculateProfitMargins = () => {
-      const revenue = getLatestRevenue();
-      const netIncome = getLatestNetIncome();
-      const grossProfit = getLatestGrossProfit();
-
-      if (!revenue) return { netMargin: null, grossMargin: null };
-
-      return {
-        netMargin: netIncome ? netIncome / revenue : null,
-        grossMargin: grossProfit ? grossProfit / revenue : null,
-      };
-    };
-
-    const margins = calculateProfitMargins();
-
-    return {
-      symbol: quote.symbol,
-      longName: quote.longName || quote.shortName,
-      shortName: quote.shortName,
-      description: profile?.longBusinessSummary,
-      sector: profile?.sector,
-      industry: profile?.industry,
-      website: profile?.website,
-      employees: profile?.fullTimeEmployees,
-      city: profile?.city,
-      state: profile?.state,
-      country: profile?.country,
-      marketCap: quote.marketCap,
-      enterpriseValue: keyStats?.enterpriseValue?.raw,
-      trailingPE: quote.trailingPE,
-      forwardPE: quote.forwardPE,
-      pegRatio: keyStats?.pegRatio?.raw,
-      priceToBook: keyStats?.priceToBook?.raw,
-      debtToEquity: financials?.debtToEquity?.raw,
-      returnOnEquity: financials?.returnOnEquity?.raw,
-      revenueGrowth: financials?.revenueGrowth?.raw || calculateRevenueGrowth(),
-      earningsGrowth: financials?.earningsGrowth?.raw,
-      currentRatio: financials?.currentRatio?.raw,
-      dividendYield: quote.dividendYield,
-      payoutRatio: keyStats?.payoutRatio?.raw,
-      beta: quote.beta,
-      fiftyTwoWeekHigh: quote.fiftyTwoWeekHigh,
-      fiftyTwoWeekLow: quote.fiftyTwoWeekLow,
-      // Additional revenue and financial data
-      totalRevenue: getLatestRevenue(),
-      netIncome: getLatestNetIncome(),
-      grossProfit: getLatestGrossProfit(),
-      netProfitMargin: margins.netMargin,
-      grossProfitMargin: margins.grossMargin,
-      quarterlyRevenueGrowth: calculateQuarterlyRevenueGrowth(),
-      operatingMargin: financials?.operatingMargins?.raw,
-      ebitdaMargin: financials?.ebitdaMargins?.raw,
-      // Revenue history for trend analysis
-      revenueHistory:
-        incomeHistory?.incomeStatementHistory?.slice(0, 4).map((statement) => ({
-          endDate: statement.endDate?.fmt,
-          revenue: statement.totalRevenue?.raw,
-          netIncome: statement.netIncome?.raw,
-          grossProfit: statement.grossProfit?.raw,
-        })) || [],
-      // Quarterly data
-      quarterlyRevenueHistory:
-        quarterlyIncome?.incomeStatementHistory
-          ?.slice(0, 8)
-          .map((statement) => ({
-            endDate: statement.endDate?.fmt,
-            revenue: statement.totalRevenue?.raw,
-            netIncome: statement.netIncome?.raw,
-          })) || [],
-    };
+    return { quote, quoteSummary };
   } catch (error) {
     throw new Error(JSON.stringify(createAPIError(error)));
   }
@@ -535,24 +360,4 @@ export function calculateSupportResistance(priceData: YahooHistoricalData[]) {
   const resistance = sortedPrices[Math.floor(sortedPrices.length * 0.9)]; // 90th percentile
 
   return { support, resistance };
-}
-
-// Search for stocks by symbol or company name
-export async function searchStocks(query: string) {
-  try {
-    const result = await yahooFinance.search(query);
-
-    return result.quotes
-      .filter((item) => item.typeDisp === "Equity" && item.exchDisp)
-      .slice(0, 10)
-      .map((item) => ({
-        symbol: item.symbol,
-        shortName: item.shortname || item.longname,
-        longName: item.longname,
-        exchange: item.exchDisp,
-        type: item.typeDisp,
-      }));
-  } catch (error) {
-    throw new Error(JSON.stringify(createAPIError(error)));
-  }
 }
