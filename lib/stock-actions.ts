@@ -1,33 +1,33 @@
-"use server"
+"use server";
 
 import {
-  getTopGainersLosers,
-  getGlobalQuote,
-  getDailyTimeSeries,
-  getSMA,
-  getRSI,
-  getCompanyOverview,
-  type TopGainersLosersResponse,
-  type AlphaVantageQuote,
-  type AlphaVantageTimeSeriesDaily,
-  type TechnicalIndicatorResponse,
-  type RSIResponse,
+  getMarketSummary,
+  getQuote,
+  getHistoricalData,
+  calculateSMA,
+  calculateRSI,
+  getCompanyProfile,
+  type YahooMarketSummary,
+  type YahooQuote,
+  type YahooHistoricalData,
+  type TechnicalIndicator,
   type APIError,
-} from "./alpha-vantage"
+} from "./yahoo-finance";
 
 // Server action to get market overview data
 export async function getMarketOverviewAction(): Promise<{
-  success: boolean
-  data?: TopGainersLosersResponse
-  error?: APIError
+  success: boolean;
+  data?: YahooMarketSummary;
+  error?: APIError;
 }> {
   try {
-    const data = await getTopGainersLosers()
-    return { success: true, data }
+    const data = await getMarketSummary();
+    console.log("getMarketSummary:", data);
+    return { success: true, data };
   } catch (error) {
     try {
-      const apiError = JSON.parse((error as Error).message) as APIError
-      return { success: false, error: apiError }
+      const apiError = JSON.parse((error as Error).message) as APIError;
+      return { success: false, error: apiError };
     } catch {
       return {
         success: false,
@@ -35,24 +35,25 @@ export async function getMarketOverviewAction(): Promise<{
           type: "UNKNOWN",
           message: "เกิดข้อผิดพลาดที่ไม่ทราบสาเหตุ กรุณาลองใหม่อีกครั้ง",
         },
-      }
+      };
     }
   }
 }
 
 // Server action to get stock quote
 export async function getStockQuoteAction(symbol: string): Promise<{
-  success: boolean
-  data?: AlphaVantageQuote
-  error?: APIError
+  success: boolean;
+  data?: YahooQuote;
+  error?: APIError;
 }> {
   try {
-    const data = await getGlobalQuote(symbol)
-    return { success: true, data }
+    const data = await getQuote(symbol);
+    console.log("getQuote:", data);
+    return { success: true, data };
   } catch (error) {
     try {
-      const apiError = JSON.parse((error as Error).message) as APIError
-      return { success: false, error: apiError }
+      const apiError = JSON.parse((error as Error).message) as APIError;
+      return { success: false, error: apiError };
     } catch {
       return {
         success: false,
@@ -60,7 +61,7 @@ export async function getStockQuoteAction(symbol: string): Promise<{
           type: "UNKNOWN",
           message: "เกิดข้อผิดพลาดที่ไม่ทราบสาเหตุ กรุณาลองใหม่อีกครั้ง",
         },
-      }
+      };
     }
   }
 }
@@ -68,19 +69,22 @@ export async function getStockQuoteAction(symbol: string): Promise<{
 // Server action to get historical data
 export async function getHistoricalDataAction(
   symbol: string,
-  outputSize: "compact" | "full" = "compact",
+  period1: string | Date = "2023-01-01",
+  period2: string | Date = new Date(),
+  interval: "1d" | "1wk" | "1mo" = "1d"
 ): Promise<{
-  success: boolean
-  data?: AlphaVantageTimeSeriesDaily
-  error?: APIError
+  success: boolean;
+  data?: YahooHistoricalData[];
+  error?: APIError;
 }> {
   try {
-    const data = await getDailyTimeSeries(symbol, outputSize)
-    return { success: true, data }
+    const data = await getHistoricalData(symbol, period1, period2, interval);
+    console.log("getHistoricalData:", data);
+    return { success: true, data };
   } catch (error) {
     try {
-      const apiError = JSON.parse((error as Error).message) as APIError
-      return { success: false, error: apiError }
+      const apiError = JSON.parse((error as Error).message) as APIError;
+      return { success: false, error: apiError };
     } catch {
       return {
         success: false,
@@ -88,7 +92,7 @@ export async function getHistoricalDataAction(
           type: "UNKNOWN",
           message: "เกิดข้อผิดพลาดที่ไม่ทราบสาเหตุ กรุณาลองใหม่อีกครั้ง",
         },
-      }
+      };
     }
   }
 }
@@ -96,21 +100,22 @@ export async function getHistoricalDataAction(
 // Server action to get SMA data
 export async function getSMAAction(
   symbol: string,
-  interval = "daily",
-  timePeriod = 20,
-  seriesType = "close",
+  period: number = 20
 ): Promise<{
-  success: boolean
-  data?: TechnicalIndicatorResponse
-  error?: APIError
+  success: boolean;
+  data?: TechnicalIndicator[];
+  error?: APIError;
 }> {
   try {
-    const data = await getSMA(symbol, interval, timePeriod, seriesType)
-    return { success: true, data }
+    // Get historical data first
+    const historicalData = await getHistoricalData(symbol);
+    const data = calculateSMA(historicalData, period);
+    console.log("getSMA:", data);
+    return { success: true, data };
   } catch (error) {
     try {
-      const apiError = JSON.parse((error as Error).message) as APIError
-      return { success: false, error: apiError }
+      const apiError = JSON.parse((error as Error).message) as APIError;
+      return { success: false, error: apiError };
     } catch {
       return {
         success: false,
@@ -118,7 +123,7 @@ export async function getSMAAction(
           type: "UNKNOWN",
           message: "เกิดข้อผิดพลาดที่ไม่ทราบสาเหตุ กรุณาลองใหม่อีกครั้ง",
         },
-      }
+      };
     }
   }
 }
@@ -126,21 +131,22 @@ export async function getSMAAction(
 // Server action to get RSI data
 export async function getRSIAction(
   symbol: string,
-  interval = "daily",
-  timePeriod = 14,
-  seriesType = "close",
+  period: number = 14
 ): Promise<{
-  success: boolean
-  data?: RSIResponse
-  error?: APIError
+  success: boolean;
+  data?: TechnicalIndicator[];
+  error?: APIError;
 }> {
   try {
-    const data = await getRSI(symbol, interval, timePeriod, seriesType)
-    return { success: true, data }
+    // Get historical data first
+    const historicalData = await getHistoricalData(symbol);
+    const data = calculateRSI(historicalData, period);
+    console.log("getRSI:", data);
+    return { success: true, data };
   } catch (error) {
     try {
-      const apiError = JSON.parse((error as Error).message) as APIError
-      return { success: false, error: apiError }
+      const apiError = JSON.parse((error as Error).message) as APIError;
+      return { success: false, error: apiError };
     } catch {
       return {
         success: false,
@@ -148,24 +154,25 @@ export async function getRSIAction(
           type: "UNKNOWN",
           message: "เกิดข้อผิดพลาดที่ไม่ทราบสาเหตุ กรุณาลองใหม่อีกครั้ง",
         },
-      }
+      };
     }
   }
 }
 
 // Server action to get company overview
 export async function getCompanyOverviewAction(symbol: string): Promise<{
-  success: boolean
-  data?: any
-  error?: APIError
+  success: boolean;
+  data?: any;
+  error?: APIError;
 }> {
   try {
-    const data = await getCompanyOverview(symbol)
-    return { success: true, data }
+    const data = await getCompanyProfile(symbol);
+    console.log("getCompanyProfile:", data);
+    return { success: true, data };
   } catch (error) {
     try {
-      const apiError = JSON.parse((error as Error).message) as APIError
-      return { success: false, error: apiError }
+      const apiError = JSON.parse((error as Error).message) as APIError;
+      return { success: false, error: apiError };
     } catch {
       return {
         success: false,
@@ -173,7 +180,7 @@ export async function getCompanyOverviewAction(symbol: string): Promise<{
           type: "UNKNOWN",
           message: "เกิดข้อผิดพลาดที่ไม่ทราบสาเหตุ กรุณาลองใหม่อีกครั้ง",
         },
-      }
+      };
     }
   }
 }

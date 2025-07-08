@@ -1,14 +1,59 @@
-# Thai stock app
+# US Stock Analyzer
 
-*Automatically synced with your [v0.dev](https://v0.dev) deployments*
+_Automatically synced with your [v0.dev](https://v0.dev) deployments_
 
 [![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com/kimookpongs-projects/v0-thai-stock-app)
 [![Built with v0](https://img.shields.io/badge/Built%20with-v0.dev-black?style=for-the-badge)](https://v0.dev/chat/projects/wYDuUnzNbTu)
 
 ## Overview
 
-This repository will stay in sync with your deployed chats on [v0.dev](https://v0.dev).
-Any changes you make to your deployed app will be automatically pushed to this repository from [v0.dev](https://v0.dev).
+A modern stock analysis application that provides real-time stock data, technical indicators, and market insights using Yahoo Finance API.
+
+## Features
+
+- 📊 Real-time stock quotes and market data
+- 📈 Interactive charts with technical indicators
+- 🔍 Stock search functionality
+- 📱 Responsive design for mobile and desktop
+- 🌙 Dark/light theme support
+- 🔄 Automatic data refresh
+- 📊 Technical analysis (SMA, RSI)
+- 📈 Market overview with gainers, losers, and most active stocks
+
+## Tech Stack
+
+- **Frontend**: Next.js 14, React, TypeScript
+- **Styling**: Tailwind CSS, Radix UI
+- **Charts**: Recharts
+- **Data Source**: Yahoo Finance API via yahoo-finance2
+- **Deployment**: Vercel
+
+## Installation
+
+1. Clone the repository:
+
+```bash
+git clone https://github.com/your-username/US-Stock-Analyzer.git
+cd US-Stock-Analyzer
+```
+
+2. Install dependencies:
+
+```bash
+npm install
+```
+
+3. Run the development server:
+
+```bash
+npm run dev
+```
+
+4. Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+## API
+
+This application uses the Yahoo Finance API through the `yahoo-finance2` library, which doesn't require an API key and provides free access to real-time stock data.
 
 ## Deployment
 
