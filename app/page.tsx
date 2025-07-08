@@ -23,447 +23,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import StockDashboard from "@/components/stock-dashboard";
 import MarketOverview from "@/components/market-overview";
 import { useSearchParams, useRouter } from "next/navigation";
-
-// Popular US stocks for autocomplete suggestions
-const popularStocks = [
-  { symbol: "AAPL", name: "Apple Inc.", sector: "Technology" },
-  { symbol: "MSFT", name: "Microsoft Corporation", sector: "Technology" },
-  {
-    symbol: "GOOGL",
-    name: "Alphabet Inc. (Class A)",
-    sector: "Communication Services",
-  },
-  {
-    symbol: "GOOG",
-    name: "Alphabet Inc. (Class C)",
-    sector: "Communication Services",
-  },
-  { symbol: "AMZN", name: "Amazon.com Inc.", sector: "Consumer Discretionary" },
-  { symbol: "TSLA", name: "Tesla Inc.", sector: "Consumer Discretionary" },
-  {
-    symbol: "META",
-    name: "Meta Platforms Inc.",
-    sector: "Communication Services",
-  },
-  { symbol: "NVDA", name: "NVIDIA Corporation", sector: "Technology" },
-  { symbol: "JPM", name: "JPMorgan Chase & Co.", sector: "Financials" },
-  { symbol: "JNJ", name: "Johnson & Johnson", sector: "Healthcare" },
-  { symbol: "V", name: "Visa Inc.", sector: "Financials" },
-  { symbol: "PG", name: "Procter & Gamble Co.", sector: "Consumer Staples" },
-  { symbol: "UNH", name: "UnitedHealth Group Inc.", sector: "Healthcare" },
-  { symbol: "HD", name: "Home Depot Inc.", sector: "Consumer Discretionary" },
-  { symbol: "MA", name: "Mastercard Inc.", sector: "Financials" },
-  { symbol: "BAC", name: "Bank of America Corp.", sector: "Financials" },
-  { symbol: "DIS", name: "Walt Disney Co.", sector: "Communication Services" },
-  { symbol: "ADBE", name: "Adobe Inc.", sector: "Technology" },
-  { symbol: "CRM", name: "Salesforce Inc.", sector: "Technology" },
-  { symbol: "NFLX", name: "Netflix Inc.", sector: "Communication Services" },
-  { symbol: "XOM", name: "Exxon Mobil Corp.", sector: "Energy" },
-  { symbol: "KO", name: "Coca-Cola Co.", sector: "Consumer Staples" },
-  { symbol: "T", name: "AT&T Inc.", sector: "Communication Services" },
-  {
-    symbol: "VZ",
-    name: "Verizon Communications Inc.",
-    sector: "Communication Services",
-  },
-  { symbol: "CMCSA", name: "Comcast Corp.", sector: "Communication Services" },
-  { symbol: "PEP", name: "PepsiCo Inc.", sector: "Consumer Staples" },
-  { symbol: "WMT", name: "Walmart Inc.", sector: "Consumer Staples" },
-  {
-    symbol: "COST",
-    name: "Costco Wholesale Corp.",
-    sector: "Consumer Staples",
-  },
-  { symbol: "ORCL", name: "Oracle Corp.", sector: "Technology" },
-  { symbol: "CSCO", name: "Cisco Systems Inc.", sector: "Technology" },
-  { symbol: "ABT", name: "Abbott Laboratories", sector: "Healthcare" },
-  { symbol: "PFE", name: "Pfizer Inc.", sector: "Healthcare" },
-  { symbol: "LLY", name: "Eli Lilly and Co.", sector: "Healthcare" },
-  { symbol: "MRK", name: "Merck & Co. Inc.", sector: "Healthcare" },
-  { symbol: "DHR", name: "Danaher Corp.", sector: "Healthcare" },
-  { symbol: "NKE", name: "Nike Inc.", sector: "Consumer Discretionary" },
-  { symbol: "SBUX", name: "Starbucks Corp.", sector: "Consumer Discretionary" },
-  { symbol: "MCD", name: "McDonald's Corp.", sector: "Consumer Discretionary" },
-  { symbol: "INTC", name: "Intel Corp.", sector: "Technology" },
-  { symbol: "QCOM", name: "Qualcomm Inc.", sector: "Information Technology" },
-  { symbol: "AVGO", name: "Broadcom Inc.", sector: "Information Technology" },
-  { symbol: "TXN", name: "Texas Instruments Inc.", sector: "Technology" },
-  { symbol: "AMD", name: "Advanced Micro Devices Inc.", sector: "Technology" },
-  {
-    symbol: "HON",
-    name: "Honeywell International Inc.",
-    sector: "Industrials",
-  },
-  { symbol: "GE", name: "General Electric Co.", sector: "Industrials" },
-  { symbol: "BA", name: "Boeing Co.", sector: "Industrials" },
-  { symbol: "CAT", name: "Caterpillar Inc.", sector: "Industrials" },
-  { symbol: "LMT", name: "Lockheed Martin Corp.", sector: "Industrials" },
-  { symbol: "RTX", name: "RTX Corporation", sector: "Industrials" },
-  { symbol: "GD", name: "General Dynamics Corp.", sector: "Industrials" },
-  { symbol: "SCHW", name: "Charles Schwab Corp.", sector: "Financials" },
-  { symbol: "GS", name: "Goldman Sachs Group Inc.", sector: "Financials" },
-  { symbol: "MS", name: "Morgan Stanley", sector: "Financials" },
-  { symbol: "C", name: "Citigroup Inc.", sector: "Financials" },
-  { symbol: "WFC", name: "Wells Fargo & Co.", sector: "Financials" },
-  { symbol: "AXP", name: "American Express Co.", sector: "Financials" },
-  { symbol: "BLK", name: "BlackRock Inc.", sector: "Financials" },
-  { symbol: "SPG", name: "Simon Property Group Inc.", sector: "Real Estate" },
-  { symbol: "PLD", name: "Prologis Inc.", sector: "Real Estate" },
-  { symbol: "EQIX", name: "Equinix Inc.", sector: "Real Estate" },
-  { symbol: "AMT", name: "American Tower Corp.", sector: "Real Estate" },
-  { symbol: "DUK", name: "Duke Energy Corp.", sector: "Utilities" },
-  { symbol: "SO", name: "Southern Co.", sector: "Utilities" },
-  { symbol: "NEE", name: "NextEra Energy Inc.", sector: "Utilities" },
-  { symbol: "D", name: "Dominion Energy Inc.", sector: "Utilities" },
-  { symbol: "EOG", name: "EOG Resources Inc.", sector: "Energy" },
-  { symbol: "CVX", name: "Chevron Corp.", sector: "Energy" },
-  { symbol: "COP", name: "ConocoPhillips", sector: "Energy" },
-  { symbol: "SLB", name: "Schlumberger Ltd.", sector: "Energy" },
-  {
-    symbol: "PM",
-    name: "Philip Morris International Inc.",
-    sector: "Consumer Staples",
-  },
-  { symbol: "MO", name: "Altria Group Inc.", sector: "Consumer Staples" },
-  {
-    symbol: "BTI",
-    name: "British American Tobacco PLC",
-    sector: "Consumer Staples",
-  },
-  {
-    symbol: "GM",
-    name: "General Motors Co.",
-    sector: "Consumer Discretionary",
-  },
-  { symbol: "F", name: "Ford Motor Co.", sector: "Consumer Discretionary" },
-  {
-    symbol: "TM",
-    name: "Toyota Motor Corp. (ADR)",
-    sector: "Consumer Discretionary",
-  },
-  {
-    symbol: "BABA",
-    name: "Alibaba Group Holding Ltd. (ADR)",
-    sector: "Consumer Discretionary",
-  },
-  { symbol: "PYPL", name: "PayPal Holdings Inc.", sector: "Financials" },
-  { symbol: "SQ", name: "Block Inc.", sector: "Financials" },
-  { symbol: "COIN", name: "Coinbase Global Inc.", sector: "Financials" },
-  {
-    symbol: "MELI",
-    name: "MercadoLibre Inc.",
-    sector: "Consumer Discretionary",
-  },
-  { symbol: "SHOP", name: "Shopify Inc.", sector: "Technology" },
-  {
-    symbol: "ZM",
-    name: "Zoom Video Communications Inc.",
-    sector: "Communication Services",
-  },
-  { symbol: "INTU", name: "Intuit Inc.", sector: "Technology" },
-  { symbol: "NOW", name: "ServiceNow Inc.", sector: "Technology" },
-  { symbol: "ISRG", name: "Intuitive Surgical Inc.", sector: "Healthcare" },
-  { symbol: "SYK", name: "Stryker Corp.", sector: "Healthcare" },
-  { symbol: "BDX", name: "Becton, Dickinson and Co.", sector: "Healthcare" },
-  { symbol: "GILD", name: "Gilead Sciences Inc.", sector: "Healthcare" },
-  { symbol: "AMGN", name: "Amgen Inc.", sector: "Healthcare" },
-  { symbol: "CVS", name: "CVS Health Corp.", sector: "Healthcare" },
-  {
-    symbol: "WBA",
-    name: "Walgreens Boots Alliance Inc.",
-    sector: "Consumer Staples",
-  },
-  { symbol: "KR", name: "Kroger Co.", sector: "Consumer Staples" },
-  {
-    symbol: "DG",
-    name: "Dollar General Corp.",
-    sector: "Consumer Discretionary",
-  },
-  {
-    symbol: "TJX",
-    name: "TJX Companies Inc.",
-    sector: "Consumer Discretionary",
-  },
-  { symbol: "FDX", name: "FedEx Corp.", sector: "Industrials" },
-  { symbol: "UPS", name: "United Parcel Service Inc.", sector: "Industrials" },
-  { symbol: "DE", name: "Deere & Co.", sector: "Industrials" },
-  { symbol: "MMM", name: "3M Co.", sector: "Industrials" },
-  { symbol: "PLTR", name: "Palantir Technologies Inc.", sector: "Technology" },
-  {
-    symbol: "UBER",
-    name: "Uber Technologies Inc.",
-    sector: "Communication Services",
-  },
-  { symbol: "LYFT", name: "Lyft Inc.", sector: "Communication Services" },
-  {
-    symbol: "SIRI",
-    name: "Sirius XM Holdings Inc.",
-    sector: "Communication Services",
-  },
-  {
-    symbol: "EA",
-    name: "Electronic Arts Inc.",
-    sector: "Communication Services",
-  },
-  {
-    symbol: "ATVI",
-    name: "Activision Blizzard Inc.",
-    sector: "Communication Services",
-  },
-  {
-    symbol: "PNC",
-    name: "PNC Financial Services Group Inc.",
-    sector: "Financials",
-  },
-  { symbol: "USB", name: "U.S. Bancorp", sector: "Financials" },
-  { symbol: "STI", name: "SunTrust Banks, Inc.", sector: "Financials" },
-  { symbol: "SPGI", name: "S&P Global Inc.", sector: "Financials" },
-  { symbol: "MCO", name: "Moody's Corp.", sector: "Financials" },
-  {
-    symbol: "ICE",
-    name: "Intercontinental Exchange Inc.",
-    sector: "Financials",
-  },
-  { symbol: "COF", name: "Capital One Financial Corp.", sector: "Financials" },
-  { symbol: "PYPL", name: "PayPal Holdings Inc.", sector: "Financials" },
-  { symbol: "SYF", name: "Synchrony Financial", sector: "Financials" },
-  { symbol: "DFS", name: "Discover Financial Services", sector: "Financials" },
-  {
-    symbol: "TMO",
-    name: "Thermo Fisher Scientific Inc.",
-    sector: "Healthcare",
-  },
-  { symbol: "BDX", name: "Becton, Dickinson and Co.", sector: "Healthcare" },
-  { symbol: "ZTS", name: "Zoetis Inc.", sector: "Healthcare" },
-  {
-    symbol: "REGN",
-    name: "Regeneron Pharmaceuticals Inc.",
-    sector: "Healthcare",
-  },
-  {
-    symbol: "GPN",
-    name: "Global Payments Inc.",
-    sector: "Information Technology",
-  },
-  {
-    symbol: "FIS",
-    name: "Fidelity National Information Services Inc.",
-    sector: "Information Technology",
-  },
-  { symbol: "CTAS", name: "Cintas Corp.", sector: "Industrials" },
-  { symbol: "ROK", name: "Rockwell Automation Inc.", sector: "Industrials" },
-  { symbol: "ITT", name: "ITT Inc.", sector: "Industrials" },
-  { symbol: "PH", name: "Parker-Hannifin Corp.", sector: "Industrials" },
-  { symbol: "ETN", name: "Eaton Corp. plc", sector: "Industrials" },
-  { symbol: "LHX", name: "L3Harris Technologies Inc.", sector: "Industrials" },
-  { symbol: "FLS", name: "Flowserve Corp.", sector: "Industrials" },
-  { symbol: "AOS", name: "A. O. Smith Corp.", sector: "Industrials" },
-  { symbol: "ALLE", name: "Allegion PLC", sector: "Industrials" },
-  { symbol: "URI", name: "United Rentals Inc.", sector: "Industrials" },
-  { symbol: "WM", name: "Waste Management Inc.", sector: "Industrials" },
-  { symbol: "RSG", name: "Republic Services Inc.", sector: "Industrials" },
-  {
-    symbol: "CNI",
-    name: "Canadian National Railway Co.",
-    sector: "Industrials",
-  },
-  { symbol: "UNP", name: "Union Pacific Corp.", sector: "Industrials" },
-  { symbol: "CSX", name: "CSX Corp.", sector: "Industrials" },
-  { symbol: "NSC", name: "Norfolk Southern Corp.", sector: "Industrials" },
-  { symbol: "KSU", name: "Kansas City Southern", sector: "Industrials" },
-  { symbol: "JBLU", name: "JetBlue Airways Corp.", sector: "Industrials" },
-  {
-    symbol: "UAL",
-    name: "United Airlines Holdings Inc.",
-    sector: "Industrials",
-  },
-  { symbol: "DAL", name: "Delta Air Lines Inc.", sector: "Industrials" },
-  { symbol: "LUV", name: "Southwest Airlines Co.", sector: "Industrials" },
-  {
-    symbol: "AAL",
-    name: "American Airlines Group Inc.",
-    sector: "Industrials",
-  },
-  { symbol: "CCL", name: "Carnival Corp.", sector: "Consumer Discretionary" },
-  {
-    symbol: "RCL",
-    name: "Royal Caribbean Group",
-    sector: "Consumer Discretionary",
-  },
-  {
-    symbol: "NCLH",
-    name: "Norwegian Cruise Line Holdings Ltd.",
-    sector: "Consumer Discretionary",
-  },
-  {
-    symbol: "MAR",
-    name: "Marriott International Inc.",
-    sector: "Consumer Discretionary",
-  },
-  {
-    symbol: "HLT",
-    name: "Hilton Worldwide Holdings Inc.",
-    sector: "Consumer Discretionary",
-  },
-  {
-    symbol: "BKNG",
-    name: "Booking Holdings Inc.",
-    sector: "Consumer Discretionary",
-  },
-  {
-    symbol: "EXPE",
-    name: "Expedia Group Inc.",
-    sector: "Consumer Discretionary",
-  },
-  {
-    symbol: "PTON",
-    name: "Peloton Interactive Inc.",
-    sector: "Consumer Discretionary",
-  },
-  {
-    symbol: "ZM",
-    name: "Zoom Video Communications Inc.",
-    sector: "Communication Services",
-  },
-  { symbol: "ROKU", name: "Roku Inc.", sector: "Communication Services" },
-  {
-    symbol: "SPOT",
-    name: "Spotify Technology S.A.",
-    sector: "Communication Services",
-  },
-  { symbol: "SNAP", name: "Snap Inc.", sector: "Communication Services" },
-  { symbol: "TWLO", name: "Twilio Inc.", sector: "Technology" },
-  { symbol: "DDOG", name: "Datadog Inc.", sector: "Technology" },
-  { symbol: "CRWD", name: "CrowdStrike Holdings Inc.", sector: "Technology" },
-  { symbol: "OKTA", name: "Okta Inc.", sector: "Technology" },
-  { symbol: "ZS", name: "Zscaler Inc.", sector: "Technology" },
-  { symbol: "NET", name: "Cloudflare Inc.", sector: "Technology" },
-  { symbol: "FTNT", name: "Fortinet Inc.", sector: "Technology" },
-  { symbol: "PANW", name: "Palo Alto Networks Inc.", sector: "Technology" },
-  { symbol: "WDAY", name: "Workday Inc.", sector: "Technology" },
-  { symbol: "SNOW", name: "Snowflake Inc.", sector: "Technology" },
-  { symbol: "MDB", name: "MongoDB Inc.", sector: "Technology" },
-  { symbol: "TEAM", name: "Atlassian Corp. Plc", sector: "Technology" },
-  { symbol: "DOCU", name: "DocuSign Inc.", sector: "Technology" },
-  { symbol: "SPLK", name: "Splunk Inc.", sector: "Technology" },
-  { symbol: "CDNS", name: "Cadence Design Systems Inc.", sector: "Technology" },
-  { symbol: "ANSS", name: "Ansys Inc.", sector: "Technology" },
-  { symbol: "KLAC", name: "KLA Corp.", sector: "Technology" },
-  { symbol: "AMAT", name: "Applied Materials Inc.", sector: "Technology" },
-  { symbol: "ASML", name: "ASML Holding N.V. (ADR)", sector: "Technology" },
-  { symbol: "MU", name: "Micron Technology Inc.", sector: "Technology" },
-  { symbol: "MRNA", name: "Moderna Inc.", sector: "Healthcare" },
-  { symbol: "BNTX", name: "BioNTech SE (ADR)", sector: "Healthcare" },
-  {
-    symbol: "REGN",
-    name: "Regeneron Pharmaceuticals Inc.",
-    sector: "Healthcare",
-  },
-  { symbol: "VRTX", name: "Vertex Pharmaceuticals Inc.", sector: "Healthcare" },
-  { symbol: "BIIB", name: "Biogen Inc.", sector: "Healthcare" },
-  { symbol: "MRNA", name: "Moderna Inc.", sector: "Healthcare" },
-  { symbol: "DVA", name: "DaVita Inc.", sector: "Healthcare" },
-  { symbol: "CVS", name: "CVS Health Corp.", sector: "Healthcare" },
-  {
-    symbol: "WBA",
-    name: "Walgreens Boots Alliance Inc.",
-    sector: "Consumer Staples",
-  },
-  {
-    symbol: "DG",
-    name: "Dollar General Corp.",
-    sector: "Consumer Discretionary",
-  },
-  {
-    symbol: "TJX",
-    name: "TJX Companies Inc.",
-    sector: "Consumer Discretionary",
-  },
-  {
-    symbol: "ROST",
-    name: "Ross Stores Inc.",
-    sector: "Consumer Discretionary",
-  },
-  { symbol: "TGT", name: "Target Corp.", sector: "Consumer Discretionary" },
-  { symbol: "HD", name: "Home Depot Inc.", sector: "Consumer Discretionary" },
-  {
-    symbol: "LOW",
-    name: "Lowe's Companies Inc.",
-    sector: "Consumer Discretionary",
-  },
-  {
-    symbol: "DLTR",
-    name: "Dollar Tree Inc.",
-    sector: "Consumer Discretionary",
-  },
-  { symbol: "FIVE", name: "Five Below Inc.", sector: "Consumer Discretionary" },
-  {
-    symbol: "LULU",
-    name: "Lululemon Athletica Inc.",
-    sector: "Consumer Discretionary",
-  },
-  {
-    symbol: "ULTA",
-    name: "Ulta Beauty Inc.",
-    sector: "Consumer Discretionary",
-  },
-  {
-    symbol: "CMG",
-    name: "Chipotle Mexican Grill Inc.",
-    sector: "Consumer Discretionary",
-  },
-  {
-    symbol: "DPZ",
-    name: "Domino's Pizza Inc.",
-    sector: "Consumer Discretionary",
-  },
-  { symbol: "YUM", name: "Yum! Brands Inc.", sector: "Consumer Discretionary" },
-  { symbol: "KDP", name: "Keurig Dr Pepper Inc.", sector: "Consumer Staples" },
-  {
-    symbol: "MDLZ",
-    name: "Mondelez International Inc.",
-    sector: "Consumer Staples",
-  },
-  {
-    symbol: "EL",
-    name: "Estee Lauder Companies Inc.",
-    sector: "Consumer Staples",
-  },
-  { symbol: "CL", name: "Colgate-Palmolive Co.", sector: "Consumer Staples" },
-  { symbol: "KHC", name: "Kraft Heinz Co.", sector: "Consumer Staples" },
-  { symbol: "GIS", name: "General Mills Inc.", sector: "Consumer Staples" },
-  { symbol: "CPB", name: "Campbell Soup Co.", sector: "Consumer Staples" },
-  {
-    symbol: "STZ",
-    name: "Constellation Brands Inc.",
-    sector: "Consumer Staples",
-  },
-  {
-    symbol: "TAP",
-    name: "Molson Coors Beverage Co.",
-    sector: "Consumer Staples",
-  },
-  { symbol: "WDC", name: "Western Digital Corp.", sector: "Technology" },
-  { symbol: "HPQ", name: "HP Inc.", sector: "Technology" },
-  { symbol: "DELL", name: "Dell Technologies Inc.", sector: "Technology" },
-  { symbol: "FFIV", name: "F5 Inc.", sector: "Technology" },
-  { symbol: "VMW", name: "VMware Inc.", sector: "Technology" },
-  { symbol: "NXPI", name: "NXP Semiconductors N.V.", sector: "Technology" },
-  { symbol: "ADI", name: "Analog Devices Inc.", sector: "Technology" },
-  { symbol: "MCHP", name: "Microchip Technology Inc.", sector: "Technology" },
-  { symbol: "SWKS", name: "Skyworks Solutions Inc.", sector: "Technology" },
-  { symbol: "QRVO", name: "Qorvo Inc.", sector: "Technology" },
-  { symbol: "ON", name: "ON Semiconductor Corp.", sector: "Technology" },
-  {
-    symbol: "MPWR",
-    name: "Monolithic Power Systems Inc.",
-    sector: "Technology",
-  },
-  { symbol: "SEDG", name: "SolarEdge Technologies Inc.", sector: "Technology" },
-  { symbol: "ENPH", name: "Enphase Energy Inc.", sector: "Technology" },
-  { symbol: "RUN", name: "Sunrun Inc.", sector: "Technology" },
-  { symbol: "FSLR", name: "First Solar Inc.", sector: "Technology" },
-];
+import { formatMarketCap } from "@/lib/yahoo-finance";
 
 const sectorColors: Record<string, string> = {
   Technology: "bg-blue-500/10 text-blue-600 dark:text-blue-400",
@@ -481,8 +41,12 @@ export default function HomePage() {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedStock, setSelectedStock] = useState("");
-  const [suggestions, setSuggestions] = useState<typeof popularStocks>([]);
+  const [suggestions, setSuggestions] = useState<any[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout | null>(
+    null
+  );
 
   const stockParam = searchParams.get("stock");
 
@@ -493,18 +57,53 @@ export default function HomePage() {
     }
   }, [stockParam, selectedStock]);
 
-  const handleSearch = (value: string) => {
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (searchTimeout) {
+        clearTimeout(searchTimeout);
+      }
+    };
+  }, [searchTimeout]);
+
+  const handleSearch = async (value: string) => {
     setSearchTerm(value);
-    if (value.length > 0) {
-      const filtered = popularStocks.filter(
-        (stock) =>
-          stock.symbol.toLowerCase().includes(value.toLowerCase()) ||
-          stock.name.toLowerCase().includes(value.toLowerCase())
-      );
-      setSuggestions(filtered);
-      setShowSuggestions(true);
+
+    // Clear previous timeout
+    if (searchTimeout) {
+      clearTimeout(searchTimeout);
+    }
+
+    if (value.length > 1) {
+      setIsSearching(true);
+
+      // Set new timeout for debouncing
+      const timeout = setTimeout(async () => {
+        try {
+          const response = await fetch(
+            `/api/search-stocks?q=${encodeURIComponent(value)}`
+          );
+          const data = await response.json();
+
+          if (data.results) {
+            setSuggestions(data.results);
+            setShowSuggestions(true);
+          } else {
+            setSuggestions([]);
+            setShowSuggestions(false);
+          }
+        } catch (error) {
+          console.error("Search error:", error);
+        } finally {
+          setIsSearching(false);
+        }
+      }, 300); // 300ms delay
+
+      setSearchTimeout(timeout);
     } else {
       setShowSuggestions(false);
+      setSuggestions([]);
+      setIsSearching(false);
     }
   };
 
@@ -561,7 +160,24 @@ export default function HomePage() {
                 Stock Analyzer
               </h1>
               <p className="text-sm text-muted-foreground">
-                Professional Stock Analysis
+                Data from{" "}
+                <a
+                  href="https://finance.yahoo.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline hover:text-blue-600"
+                >
+                  Yahoo Finance
+                </a>{" "}
+                | Analyze by{" "}
+                <a
+                  href="https://kimookpong.vercel.app/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline hover:text-blue-600"
+                >
+                  Hakim Mudor
+                </a>
               </p>
             </div>
           </div>
@@ -615,6 +231,11 @@ export default function HomePage() {
                     onFocus={() => searchTerm && setShowSuggestions(true)}
                     className="h-12 text-lg border-2 focus:border-blue-500 dark:focus:border-blue-400"
                   />
+                  {isSearching && (
+                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>
+                    </div>
+                  )}
                   {showSuggestions && suggestions.length > 0 && (
                     <div className="absolute top-full left-0 right-0 bg-white dark:bg-slate-900 border-2 border-gray-200 dark:border-slate-700 rounded-lg shadow-2xl z-[9999] max-h-80 overflow-y-auto mt-1">
                       {suggestions.map((stock, index) => (
@@ -632,14 +253,28 @@ export default function HomePage() {
                               <div className="text-sm text-muted-foreground">
                                 {stock.name}
                               </div>
+                              {stock.exchange && (
+                                <div className="text-xs text-muted-foreground">
+                                  {stock.exchange}
+                                </div>
+                              )}
                             </div>
-                            <div
-                              className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                sectorColors[stock.sector] ||
-                                "bg-gray-100 text-gray-600"
-                              }`}
-                            >
-                              {stock.sector}
+                            <div className="flex flex-col items-end gap-1">
+                              {stock.sector && (
+                                <div
+                                  className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                    sectorColors[stock.sector] ||
+                                    "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300"
+                                  }`}
+                                >
+                                  {stock.sector}
+                                </div>
+                              )}
+                              {stock.marketCap && (
+                                <div className="text-xs text-muted-foreground">
+                                  Market Cap: {formatMarketCap(stock.marketCap)}
+                                </div>
+                              )}
                             </div>
                           </div>
                         </button>
@@ -665,88 +300,7 @@ export default function HomePage() {
           <StockDashboard symbol={selectedStock} />
         ) : (
           <>
-            {/* Market Overview */}
             <MarketOverview onStockSelect={handleSelectStock} />
-
-            {/* Popular Stocks Section */}
-            <div className="mt-16">
-              <div className="text-center mb-8">
-                <h3 className="text-2xl font-semibold mb-6 text-slate-800 dark:text-slate-200">
-                  หุ้นยอดนิยม
-                </h3>
-                <p className="text-muted-foreground">
-                  คลิกเพื่อดูการวิเคราะห์โดยละเอียด
-                </p>
-              </div>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 max-w-6xl mx-auto">
-                {popularStocks.slice(0, 15).map((stock) => (
-                  <Card
-                    key={stock.symbol}
-                    className="cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-105 border-0 bg-white/60 dark:bg-slate-900/60 backdrop-blur-sm"
-                    onClick={() => handleSelectStock(stock.symbol)}
-                  >
-                    <CardContent className="p-4 text-center">
-                      <div className="font-bold text-lg mb-1">
-                        {stock.symbol}
-                      </div>
-                      <div className="text-xs text-muted-foreground mb-2 line-clamp-2">
-                        {stock.name}
-                      </div>
-                      <div
-                        className={`px-2 py-1 rounded-full text-xs font-medium ${
-                          sectorColors[stock.sector] ||
-                          "bg-gray-100 text-gray-600"
-                        }`}
-                      >
-                        {stock.sector}
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </div>
-
-            {/* Features Section */}
-            <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-              <Card className="text-center border-0 bg-white/60 dark:bg-slate-900/60 backdrop-blur-sm">
-                <CardContent className="p-8">
-                  <div className="p-4 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl w-fit mx-auto mb-4">
-                    <BarChart3 className="h-8 w-8 text-white" />
-                  </div>
-                  <h3 className="text-xl font-semibold mb-2">กราฟราคาหุ้น</h3>
-                  <p className="text-muted-foreground">
-                    กราฟราคาหุ้นย้อนหลัง 5 ปี
-                    พร้อมข้อมูลการเปลี่ยนแปลงแบบเรียลไทม์
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card className="text-center border-0 bg-white/60 dark:bg-slate-900/60 backdrop-blur-sm">
-                <CardContent className="p-8">
-                  <div className="p-4 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl w-fit mx-auto mb-4">
-                    <DollarSign className="h-8 w-8 text-white" />
-                  </div>
-                  <h3 className="text-xl font-semibold mb-2">
-                    ข้อมูลทางการเงิน
-                  </h3>
-                  <p className="text-muted-foreground">
-                    EPS, PE Ratio, PS Ratio และอัตราการเติบโตของรายได้และกำไร
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card className="text-center border-0 bg-white/60 dark:bg-slate-900/60 backdrop-blur-sm">
-                <CardContent className="p-8">
-                  <div className="p-4 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl w-fit mx-auto mb-4">
-                    <TrendingUp className="h-8 w-8 text-white" />
-                  </div>
-                  <h3 className="text-xl font-semibold mb-2">การวิเคราะห์</h3>
-                  <p className="text-muted-foreground">
-                    อัตราปันผลและการวิเคราะห์แนวโน้มการเติบโตของบริษัท
-                  </p>
-                </CardContent>
-              </Card>
-            </div>
           </>
         )}
       </div>
