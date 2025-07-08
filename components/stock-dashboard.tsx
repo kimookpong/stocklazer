@@ -20,6 +20,7 @@ import {
   BarChart3,
   AlertCircle,
   RefreshCw,
+  Calculator,
 } from "lucide-react";
 import StockChart from "./stock-chart";
 import MetricsLegend from "./metrics-legend";
@@ -450,7 +451,14 @@ export default function StockDashboard({ symbol }: StockDashboardProps) {
             </p>
           </div>
         </div>
-        <ShareButton symbol={symbol} />
+        <ShareButton
+          symbol={symbol}
+          companyName={
+            companyData?.longName ||
+            companyData?.shortName ||
+            `${symbol} Corporation`
+          }
+        />
       </div>
 
       {/* Error Alert */}
@@ -904,6 +912,123 @@ export default function StockDashboard({ symbol }: StockDashboardProps) {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-6">
+                    {/* Key Financial Metrics - Yahoo Finance Data */}
+                    <div className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                      <h4 className="font-semibold mb-4 text-blue-800 dark:text-blue-200">
+                        🔥 ตัวชี้วัดหลักจาก Yahoo Finance
+                      </h4>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        {/* Revenue Growth */}
+                        <div className="p-3 bg-white dark:bg-slate-800 rounded-lg border">
+                          <div className="flex justify-between items-start mb-2">
+                            <span className="font-medium text-sm">
+                              การเติบโตรายได้
+                            </span>
+                            {companyData.revenueGrowth !== undefined && (
+                              <Badge
+                                variant="outline"
+                                className={
+                                  evaluateRevenueGrowth(
+                                    companyData.revenueGrowth
+                                  ).color
+                                }
+                              >
+                                {
+                                  evaluateRevenueGrowth(
+                                    companyData.revenueGrowth
+                                  ).level
+                                }
+                              </Badge>
+                            )}
+                          </div>
+                          <div className="text-xl font-bold">
+                            {companyData.revenueGrowth !== undefined
+                              ? `${(companyData.revenueGrowth * 100).toFixed(
+                                  1
+                                )}%`
+                              : "N/A"}
+                          </div>
+                          <div className="text-xs text-muted-foreground">
+                            Revenue Growth (YoY)
+                          </div>
+                        </div>
+
+                        {/* Earnings Growth (Profit Growth) */}
+                        <div className="p-3 bg-white dark:bg-slate-800 rounded-lg border">
+                          <div className="flex justify-between items-start mb-2">
+                            <span className="font-medium text-sm">
+                              การเติบโตกำไร
+                            </span>
+                            {companyData.earningsGrowth !== undefined && (
+                              <Badge
+                                variant="outline"
+                                className={
+                                  evaluateRevenueGrowth(
+                                    companyData.earningsGrowth
+                                  ).color
+                                }
+                              >
+                                {
+                                  evaluateRevenueGrowth(
+                                    companyData.earningsGrowth
+                                  ).level
+                                }
+                              </Badge>
+                            )}
+                          </div>
+                          <div className="text-xl font-bold">
+                            {companyData.earningsGrowth !== undefined
+                              ? `${(companyData.earningsGrowth * 100).toFixed(
+                                  1
+                                )}%`
+                              : "N/A"}
+                          </div>
+                          <div className="text-xs text-muted-foreground">
+                            Profit Growth (YoY)
+                          </div>
+                        </div>
+
+                        {/* PS Ratio */}
+                        <div className="p-3 bg-white dark:bg-slate-800 rounded-lg border">
+                          <div className="flex justify-between items-start mb-2">
+                            <span className="font-medium text-sm">
+                              PS Ratio
+                            </span>
+                            {companyData.marketCap &&
+                              companyData.totalRevenue && (
+                                <Badge
+                                  variant="outline"
+                                  className={(() => {
+                                    const psRatio =
+                                      companyData.marketCap /
+                                      companyData.totalRevenue;
+                                    return evaluatePSRatio(psRatio).color;
+                                  })()}
+                                >
+                                  {(() => {
+                                    const psRatio =
+                                      companyData.marketCap /
+                                      companyData.totalRevenue;
+                                    return evaluatePSRatio(psRatio).level;
+                                  })()}
+                                </Badge>
+                              )}
+                          </div>
+                          <div className="text-xl font-bold">
+                            {companyData.marketCap && companyData.totalRevenue
+                              ? `${(
+                                  companyData.marketCap /
+                                  companyData.totalRevenue
+                                ).toFixed(2)}x`
+                              : "N/A"}
+                          </div>
+                          <div className="text-xs text-muted-foreground">
+                            Price-to-Sales Ratio
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
                     {/* Total Revenue */}
                     <div className="p-4 bg-muted/50 rounded-lg">
                       <div className="flex justify-between items-start mb-2">
@@ -915,7 +1040,7 @@ export default function StockDashboard({ symbol }: StockDashboardProps) {
                           : "N/A"}
                       </div>
                       <div className="text-sm text-muted-foreground">
-                        รายได้ทั้งหมดในรอบ 12 เดือนที่ผ่านมา
+                        รายได้ทั้งหมดในรอบ 12 เดือนที่ผ่านมา (จาก Yahoo Finance)
                       </div>
                       {companyData.grossProfit && (
                         <div className="mt-2 text-sm">
@@ -1028,6 +1153,44 @@ export default function StockDashboard({ symbol }: StockDashboardProps) {
                         </div>
                       </div>
 
+                      {/* Earnings Growth (Profit Growth) */}
+                      <div className="p-4 bg-muted/50 rounded-lg">
+                        <div className="flex justify-between items-start mb-2">
+                          <span className="font-semibold text-sm">
+                            การเติบโตกำไร (Earnings Growth)
+                          </span>
+                          {companyData.earningsGrowth !== undefined && (
+                            <Badge
+                              variant="outline"
+                              className={
+                                evaluateRevenueGrowth(
+                                  companyData.earningsGrowth
+                                ).color
+                              }
+                            >
+                              {
+                                evaluateRevenueGrowth(
+                                  companyData.earningsGrowth
+                                ).level
+                              }
+                            </Badge>
+                          )}
+                        </div>
+                        <div className="text-xl font-bold mb-1">
+                          {companyData.earningsGrowth !== undefined
+                            ? `${(companyData.earningsGrowth * 100).toFixed(
+                                2
+                              )}%`
+                            : "N/A"}
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          อัตราการเติบโตของกำไรปีต่อปี
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Quarterly Growth Analysis */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="p-4 bg-muted/50 rounded-lg">
                         <div className="flex justify-between items-start mb-2">
                           <span className="font-semibold text-sm">
@@ -1063,190 +1226,40 @@ export default function StockDashboard({ symbol }: StockDashboardProps) {
                       </div>
                     </div>
 
-                    {/* Profit Margins */}
-                    <div className="p-4 bg-muted/50 rounded-lg">
-                      <h4 className="font-semibold mb-3">
-                        อัตราส่วนกำไร (Profit Margins)
-                      </h4>
-                      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
-                        <div>
-                          <span className="text-muted-foreground">
-                            Gross Margin:
+                    {/* Additional Revenue Metrics */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="p-4 bg-muted/50 rounded-lg">
+                        <div className="flex justify-between items-start mb-2">
+                          <span className="font-semibold text-sm">
+                            กำไรขั้นต้น (Gross Profit)
                           </span>
-                          <div className="font-semibold">
-                            {companyData.grossProfitMargin
-                              ? `${(
-                                  companyData.grossProfitMargin * 100
-                                ).toFixed(1)}%`
-                              : "N/A"}
-                          </div>
-                          {companyData.grossProfitMargin && (
-                            <div className="text-xs text-muted-foreground">
-                              {companyData.grossProfitMargin > 0.5
-                                ? "ดีมาก"
-                                : companyData.grossProfitMargin > 0.3
-                                ? "ดี"
-                                : companyData.grossProfitMargin > 0.15
-                                ? "ปานกลาง"
-                                : "ต่ำ"}
-                            </div>
-                          )}
                         </div>
-                        <div>
-                          <span className="text-muted-foreground">
-                            Operating Margin:
-                          </span>
-                          <div className="font-semibold">
-                            {companyData.operatingMargin
-                              ? `${(companyData.operatingMargin * 100).toFixed(
-                                  1
-                                )}%`
-                              : "N/A"}
-                          </div>
-                          {companyData.operatingMargin && (
-                            <div className="text-xs text-muted-foreground">
-                              {companyData.operatingMargin > 0.2
-                                ? "ดีมาก"
-                                : companyData.operatingMargin > 0.1
-                                ? "ดี"
-                                : companyData.operatingMargin > 0.05
-                                ? "ปานกลาง"
-                                : "ต่ำ"}
-                            </div>
-                          )}
-                        </div>
-                        <div>
-                          <span className="text-muted-foreground">
-                            Net Margin:
-                          </span>
-                          <div className="font-semibold">
-                            {companyData.netProfitMargin
-                              ? `${(companyData.netProfitMargin * 100).toFixed(
-                                  1
-                                )}%`
-                              : "N/A"}
-                          </div>
-                          {companyData.netProfitMargin && (
-                            <div className="text-xs text-muted-foreground">
-                              {companyData.netProfitMargin > 0.15
-                                ? "ดีมาก"
-                                : companyData.netProfitMargin > 0.08
-                                ? "ดี"
-                                : companyData.netProfitMargin > 0.03
-                                ? "ปานกลาง"
-                                : companyData.netProfitMargin > 0
-                                ? "ต่ำ"
-                                : "ขาดทุน"}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Revenue History Trend */}
-                    {companyData.revenueHistory &&
-                      companyData.revenueHistory.length > 0 && (
-                        <div className="p-4 bg-muted/50 rounded-lg">
-                          <h4 className="font-semibold mb-3">
-                            แนวโน้มรายได้ (4 ปีล่าสุด)
-                          </h4>
-                          <div className="space-y-2">
-                            {companyData.revenueHistory.map(
-                              (item: any, index: number) => (
-                                <div
-                                  key={index}
-                                  className="flex justify-between items-center text-sm"
-                                >
-                                  <span className="text-muted-foreground">
-                                    {item.endDate || `ปี ${index + 1}`}:
-                                  </span>
-                                  <div className="flex items-center space-x-4">
-                                    <span className="font-semibold">
-                                      {item.revenue
-                                        ? formatMarketCap(item.revenue)
-                                        : "N/A"}
-                                    </span>
-                                    {index > 0 &&
-                                      item.revenue &&
-                                      companyData.revenueHistory[index - 1]
-                                        ?.revenue && (
-                                        <span
-                                          className={`text-xs px-2 py-1 rounded ${
-                                            item.revenue >
-                                            companyData.revenueHistory[
-                                              index - 1
-                                            ].revenue
-                                              ? "bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400"
-                                              : "bg-red-100 text-red-700 dark:bg-red-900/20 dark:text-red-400"
-                                          }`}
-                                        >
-                                          {item.revenue >
-                                          companyData.revenueHistory[index - 1]
-                                            .revenue
-                                            ? "↗"
-                                            : "↘"}
-                                          {(
-                                            ((item.revenue -
-                                              companyData.revenueHistory[
-                                                index - 1
-                                              ].revenue) /
-                                              companyData.revenueHistory[
-                                                index - 1
-                                              ].revenue) *
-                                            100
-                                          ).toFixed(1)}
-                                          %
-                                        </span>
-                                      )}
-                                  </div>
-                                </div>
-                              )
-                            )}
-                          </div>
-                        </div>
-                      )}
-
-                    {/* Additional Financial Health Metrics */}
-                    <div className="grid grid-cols-2 gap-4 text-sm">
-                      <div>
-                        <span className="text-muted-foreground">
-                          Current Ratio:
-                        </span>
-                        <div className="font-semibold">
-                          {companyData.currentRatio
-                            ? companyData.currentRatio.toFixed(2)
+                        <div className="text-xl font-bold mb-1">
+                          {companyData.grossProfit
+                            ? formatMarketCap(companyData.grossProfit)
                             : "N/A"}
                         </div>
-                        {companyData.currentRatio && (
-                          <div className="text-xs text-muted-foreground">
-                            {companyData.currentRatio > 2
-                              ? "สภาพคล่องดีมาก"
-                              : companyData.currentRatio > 1.5
-                              ? "สภาพคล่องดี"
-                              : companyData.currentRatio > 1
-                              ? "สภาพคล่องพอใช้"
-                              : "สภาพคล่องต่ำ"}
-                          </div>
-                        )}
+                        <div className="text-sm text-muted-foreground">
+                          กำไรหลังหักต้นทุนขาย -
+                          แสดงถึงประสิทธิภาพในการผลิตและการควบคุมต้นทุน
+                        </div>
                       </div>
-                      <div>
-                        <span className="text-muted-foreground">
-                          Debt/Equity:
-                        </span>
-                        <div className="font-semibold">
-                          {companyData.debtToEquity
-                            ? companyData.debtToEquity.toFixed(2)
+
+                      <div className="p-4 bg-muted/50 rounded-lg">
+                        <div className="flex justify-between items-start mb-2">
+                          <span className="font-semibold text-sm">
+                            กำไรสุทธิ (Net Income)
+                          </span>
+                        </div>
+                        <div className="text-xl font-bold mb-1">
+                          {companyData.netIncome
+                            ? formatMarketCap(companyData.netIncome)
                             : "N/A"}
                         </div>
-                        {companyData.debtToEquity && (
-                          <div className="text-xs text-muted-foreground">
-                            {companyData.debtToEquity < 0.3
-                              ? "หนี้สินต่ำ"
-                              : companyData.debtToEquity < 0.6
-                              ? "หนี้สินปานกลาง"
-                              : "หนี้สินสูง"}
-                          </div>
-                        )}
+                        <div className="text-sm text-muted-foreground">
+                          กำไรสุทธิหลังหักค่าใช้จ่ายทั้งหมด -
+                          แสดงถึงผลกำไรที่แท้จริงของบริษัท
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -1434,7 +1447,7 @@ export default function StockDashboard({ symbol }: StockDashboardProps) {
                               }
                               className="h-3"
                             />
-                            <div className="flex justify-between text-xs text-muted-foreground">
+                            <div className="flex justify-between text-xs text-muted-foreground mt-1">
                               <span>
                                 Low: ${companyData.fiftyTwoWeekLow.toFixed(2)}
                               </span>
@@ -1776,7 +1789,488 @@ export default function StockDashboard({ symbol }: StockDashboardProps) {
           {/* Technical Analysis Legend */}
         </TabsContent>
       </Tabs>
+      {/* Investment Analysis Summary */}
+      <Card className="border-2 border-blue-200 dark:border-blue-800 bg-gradient-to-br from-blue-50/50 to-indigo-50/50 dark:from-blue-950/30 dark:to-indigo-950/30">
+        <CardHeader>
+          <CardTitle className="text-xl flex items-center gap-2">
+            <Calculator className="h-5 w-5" />
+            ผลการวิเคราะห์และพิจารณา
+          </CardTitle>
+          <CardDescription>
+            สรุปผลการประเมินตามเกณฑ์มาตรฐานและข้อเสนอแนะการลงทุน
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {companyData && (
+            <div className="space-y-6">
+              {/* Overall Investment Score */}
+              <div className="p-4 bg-white dark:bg-slate-800 rounded-lg border">
+                <h4 className="font-semibold mb-3">คะแนนการลงทุนโดยรวม</h4>
+                {(() => {
+                  // Calculate individual scores
+                  let totalScore = 0;
+                  let totalWeight = 0;
+                  const scores: any = {};
 
+                  // Revenue Growth Score (20%)
+                  if (companyData.revenueGrowth !== undefined) {
+                    const growth = companyData.revenueGrowth;
+                    let score = 0;
+                    if (growth > 0.2) score = 100;
+                    else if (growth > 0.1) score = 80;
+                    else if (growth > 0.05) score = 60;
+                    else score = 20;
+                    scores.revenueGrowth = { score, weight: 20 };
+                    totalScore += score * 0.2;
+                    totalWeight += 20;
+                  }
+
+                  // Earnings Growth Score (20%)
+                  if (companyData.earningsGrowth !== undefined) {
+                    const growth = companyData.earningsGrowth;
+                    let score = 0;
+                    if (growth > 0.15) score = 100;
+                    else if (growth > 0.05) score = 80;
+                    else if (growth > 0) score = 60;
+                    else score = 20;
+                    scores.earningsGrowth = { score, weight: 20 };
+                    totalScore += score * 0.2;
+                    totalWeight += 20;
+                  }
+
+                  // PE Ratio Score (20%)
+                  if (companyData.trailingPE) {
+                    const pe = companyData.trailingPE;
+                    let score = 0;
+                    if (pe < 15) score = 90;
+                    else if (pe <= 25) score = 80;
+                    else if (pe <= 40) score = 50;
+                    else score = 20;
+                    scores.peRatio = { score, weight: 20 };
+                    totalScore += score * 0.2;
+                    totalWeight += 20;
+                  }
+
+                  // PS Ratio Score (15%)
+                  if (companyData.marketCap && companyData.totalRevenue) {
+                    const ps = companyData.marketCap / companyData.totalRevenue;
+                    let score = 0;
+                    if (ps < 2) score = 90;
+                    else if (ps <= 5) score = 80;
+                    else if (ps <= 10) score = 50;
+                    else score = 20;
+                    scores.psRatio = { score, weight: 15 };
+                    totalScore += score * 0.15;
+                    totalWeight += 15;
+                  }
+
+                  // EPS Score (15%)
+                  if (companyData.trailingPE) {
+                    const eps = currentPrice / companyData.trailingPE;
+                    let score = 0;
+                    if (eps > 5) score = 100;
+                    else if (eps > 2) score = 80;
+                    else if (eps > 0) score = 60;
+                    else score = 0;
+                    scores.eps = { score, weight: 15 };
+                    totalScore += score * 0.15;
+                    totalWeight += 15;
+                  }
+
+                  // Dividend Yield Score (10%)
+                  if (companyData.dividendYield !== undefined) {
+                    const dividend = companyData.dividendYield;
+                    let score = 0;
+                    if (dividend >= 0.04 && dividend <= 0.06) score = 85;
+                    else if (dividend >= 0.02 && dividend < 0.04) score = 75;
+                    else if (dividend >= 0 && dividend < 0.02) score = 70;
+                    else score = 40;
+                    scores.dividend = { score, weight: 10 };
+                    totalScore += score * 0.1;
+                    totalWeight += 10;
+                  }
+
+                  // Normalize score to percentage
+                  const finalScore =
+                    totalWeight > 0 ? (totalScore / totalWeight) * 100 : 0;
+
+                  // Determine recommendation
+                  let recommendation = "";
+                  let recommendationColor = "";
+                  let recommendationIcon = "";
+
+                  if (finalScore >= 80) {
+                    recommendation = "แนะนำซื้อขอ";
+                    recommendationColor =
+                      "text-emerald-600 dark:text-emerald-400";
+                    recommendationIcon = "🚀";
+                  } else if (finalScore >= 60) {
+                    recommendation = "พิจารณาซื้อ";
+                    recommendationColor = "text-blue-600 dark:text-blue-400";
+                    recommendationIcon = "📈";
+                  } else if (finalScore >= 40) {
+                    recommendation = "รอดูก่อน";
+                    recommendationColor =
+                      "text-yellow-600 dark:text-yellow-400";
+                    recommendationIcon = "⚡";
+                  } else {
+                    recommendation = "ไม่แนะนำ";
+                    recommendationColor = "text-red-600 dark:text-red-400";
+                    recommendationIcon = "⚠️";
+                  }
+
+                  return (
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div className="text-3xl font-bold">
+                          {finalScore.toFixed(1)}%
+                        </div>
+                        <div
+                          className={`text-lg font-semibold ${recommendationColor} flex items-center gap-2`}
+                        >
+                          <span className="text-2xl">{recommendationIcon}</span>
+                          {recommendation}
+                        </div>
+                      </div>
+
+                      {/* Score Breakdown */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+                        {scores.revenueGrowth && (
+                          <div className="flex justify-between items-center p-2 bg-gray-50 dark:bg-slate-700 rounded">
+                            <span>การเติบโตรายได้</span>
+                            <div className="flex items-center gap-2">
+                              <span className="font-semibold">
+                                {scores.revenueGrowth.score}/100
+                              </span>
+                              <span className="text-xs text-muted-foreground">
+                                ({scores.revenueGrowth.weight}%)
+                              </span>
+                            </div>
+                          </div>
+                        )}
+                        {scores.earningsGrowth && (
+                          <div className="flex justify-between items-center p-2 bg-gray-50 dark:bg-slate-700 rounded">
+                            <span>การเติบโตกำไร</span>
+                            <div className="flex items-center gap-2">
+                              <span className="font-semibold">
+                                {scores.earningsGrowth.score}/100
+                              </span>
+                              <span className="text-xs text-muted-foreground">
+                                ({scores.earningsGrowth.weight}%)
+                              </span>
+                            </div>
+                          </div>
+                        )}
+                        {scores.peRatio && (
+                          <div className="flex justify-between items-center p-2 bg-gray-50 dark:bg-slate-700 rounded">
+                            <span>ความคุ้มค่า (PE)</span>
+                            <div className="flex items-center gap-2">
+                              <span className="font-semibold">
+                                {scores.peRatio.score}/100
+                              </span>
+                              <span className="text-xs text-muted-foreground">
+                                ({scores.peRatio.weight}%)
+                              </span>
+                            </div>
+                          </div>
+                        )}
+                        {scores.psRatio && (
+                          <div className="flex justify-between items-center p-2 bg-gray-50 dark:bg-slate-700 rounded">
+                            <span>ความคุ้มค่า (PS)</span>
+                            <div className="flex items-center gap-2">
+                              <span className="font-semibold">
+                                {scores.psRatio.score}/100
+                              </span>
+                              <span className="text-xs text-muted-foreground">
+                                ({scores.psRatio.weight}%)
+                              </span>
+                            </div>
+                          </div>
+                        )}
+                        {scores.eps && (
+                          <div className="flex justify-between items-center p-2 bg-gray-50 dark:bg-slate-700 rounded">
+                            <span>กำไรต่อหุ้น (EPS)</span>
+                            <div className="flex items-center gap-2">
+                              <span className="font-semibold">
+                                {scores.eps.score}/100
+                              </span>
+                              <span className="text-xs text-muted-foreground">
+                                ({scores.eps.weight}%)
+                              </span>
+                            </div>
+                          </div>
+                        )}
+                        {scores.dividend && (
+                          <div className="flex justify-between items-center p-2 bg-gray-50 dark:bg-slate-700 rounded">
+                            <span>อัตราปันผล</span>
+                            <div className="flex items-center gap-2">
+                              <span className="font-semibold">
+                                {scores.dividend.score}/100
+                              </span>
+                              <span className="text-xs text-muted-foreground">
+                                ({scores.dividend.weight}%)
+                              </span>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })()}
+              </div>
+
+              {/* Detailed Analysis */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Strengths */}
+                <div className="p-4 bg-green-50 dark:bg-green-950/20 rounded-lg border border-green-200 dark:border-green-800">
+                  <h4 className="font-semibold text-green-800 dark:text-green-200 mb-3">
+                    จุดแข็ง
+                  </h4>
+                  <div className="space-y-2 text-sm">
+                    {companyData.revenueGrowth &&
+                      companyData.revenueGrowth > 0.15 && (
+                        <div className="flex items-center gap-2">
+                          <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                          <span>
+                            การเติบโตรายได้สูง (
+                            {(companyData.revenueGrowth * 100).toFixed(1)}%)
+                          </span>
+                        </div>
+                      )}
+                    {companyData.earningsGrowth &&
+                      companyData.earningsGrowth > 0.1 && (
+                        <div className="flex items-center gap-2">
+                          <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                          <span>
+                            การเติบโตกำไรดี (
+                            {(companyData.earningsGrowth * 100).toFixed(1)}
+                            %)
+                          </span>
+                        </div>
+                      )}
+                    {companyData.trailingPE && companyData.trailingPE < 20 && (
+                      <div className="flex items-center gap-2">
+                        <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                        <span>
+                          P/E Ratio สมเหตุสมผล (
+                          {companyData.trailingPE.toFixed(1)}x)
+                        </span>
+                      </div>
+                    )}
+                    {companyData.returnOnEquity &&
+                      companyData.returnOnEquity > 0.15 && (
+                        <div className="flex items-center gap-2">
+                          <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                          <span>
+                            ROE สูง (
+                            {(companyData.returnOnEquity * 100).toFixed(1)}
+                            %)
+                          </span>
+                        </div>
+                      )}
+                    {companyData.dividendYield &&
+                      companyData.dividendYield > 0.03 && (
+                        <div className="flex items-center gap-2">
+                          <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                          <span>
+                            ปันผลดี (
+                            {(companyData.dividendYield * 100).toFixed(1)}%)
+                          </span>
+                        </div>
+                      )}
+                    {companyData.currentRatio &&
+                      companyData.currentRatio > 1.5 && (
+                        <div className="flex items-center gap-2">
+                          <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                          <span>
+                            สภาพคล่องดี (Current Ratio:{" "}
+                            {companyData.currentRatio.toFixed(1)})
+                          </span>
+                        </div>
+                      )}
+                  </div>
+                </div>
+
+                {/* Areas of Concern */}
+                <div className="p-4 bg-yellow-50 dark:bg-yellow-950/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
+                  <h4 className="font-semibold text-yellow-800 dark:text-yellow-200 mb-3">
+                    จุดที่ควรระวัง
+                  </h4>
+                  <div className="space-y-2 text-sm">
+                    {companyData.revenueGrowth &&
+                      companyData.revenueGrowth < 0.05 && (
+                        <div className="flex items-center gap-2">
+                          <span className="w-2 h-2 bg-yellow-500 rounded-full"></span>
+                          <span>
+                            การเติบโตรายได้ต่ำ (
+                            {(companyData.revenueGrowth * 100).toFixed(1)}%)
+                          </span>
+                        </div>
+                      )}
+                    {companyData.trailingPE && companyData.trailingPE > 30 && (
+                      <div className="flex items-center gap-2">
+                        <span className="w-2 h-2 bg-yellow-500 rounded-full"></span>
+                        <span>
+                          P/E Ratio สูง ({companyData.trailingPE.toFixed(1)}x) -
+                          ราคาอาจแพง
+                        </span>
+                      </div>
+                    )}
+                    {companyData.debtToEquity &&
+                      companyData.debtToEquity > 0.6 && (
+                        <div className="flex items-center gap-2">
+                          <span className="w-2 h-2 bg-yellow-500 rounded-full"></span>
+                          <span>
+                            อัตราหนี้สินต่อทุนสูง (
+                            {companyData.debtToEquity.toFixed(1)})
+                          </span>
+                        </div>
+                      )}
+                    {companyData.beta && companyData.beta > 1.3 && (
+                      <div className="flex items-center gap-2">
+                        <span className="w-2 h-2 bg-yellow-500 rounded-full"></span>
+                        <span>
+                          ความผันผวนสูง (Beta: {companyData.beta.toFixed(1)})
+                        </span>
+                      </div>
+                    )}
+                    {companyData.payoutRatio &&
+                      companyData.payoutRatio > 0.8 && (
+                        <div className="flex items-center gap-2">
+                          <span className="w-2 h-2 bg-yellow-500 rounded-full"></span>
+                          <span>
+                            Payout Ratio สูง (
+                            {(companyData.payoutRatio * 100).toFixed(1)}%) -
+                            อาจลดปันผลได้
+                          </span>
+                        </div>
+                      )}
+                    {companyData.currentRatio &&
+                      companyData.currentRatio < 1.2 && (
+                        <div className="flex items-center gap-2">
+                          <span className="w-2 h-2 bg-yellow-500 rounded-full"></span>
+                          <span>
+                            สภาพคล่องต่ำ (Current Ratio:{" "}
+                            {companyData.currentRatio.toFixed(1)})
+                          </span>
+                        </div>
+                      )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Investment Recommendation */}
+              <div className="p-4 bg-gradient-to-r from-indigo-50 to-blue-50 dark:from-indigo-950/30 dark:to-blue-950/30 rounded-lg border border-indigo-200 dark:border-indigo-800">
+                <h4 className="font-semibold text-indigo-800 dark:text-indigo-200 mb-3">
+                  ข้อเสนะแนะการลงทุน
+                </h4>
+                <div className="space-y-3 text-sm">
+                  {(() => {
+                    const finalScore = (() => {
+                      let totalScore = 0;
+                      let totalWeight = 0;
+
+                      if (companyData.revenueGrowth !== undefined) {
+                        const growth = companyData.revenueGrowth;
+                        let score =
+                          growth > 0.2
+                            ? 100
+                            : growth > 0.1
+                            ? 80
+                            : growth > 0.05
+                            ? 60
+                            : 20;
+                        totalScore += score * 0.2;
+                        totalWeight += 20;
+                      }
+
+                      if (companyData.trailingPE) {
+                        const pe = companyData.trailingPE;
+                        let score =
+                          pe < 15 ? 90 : pe <= 25 ? 80 : pe <= 40 ? 50 : 20;
+                        totalScore += score * 0.2;
+                        totalWeight += 20;
+                      }
+
+                      return totalWeight > 0
+                        ? (totalScore / totalWeight) * 100
+                        : 0;
+                    })();
+
+                    if (finalScore >= 80) {
+                      return (
+                        <>
+                          <div className="font-medium text-emerald-700 dark:text-emerald-300">
+                            🚀 หุ้นนี้มีศักยภาพดี แนะนำให้พิจารณาลงทุน
+                          </div>
+                          <ul className="list-disc list-inside space-y-1 text-indigo-700 dark:text-indigo-300 ml-4">
+                            <li>
+                              เหมาะสำหรับนักลงทุนที่ต้องการผลตอบแทนในระยะยาว
+                            </li>
+                            <li>ควรพิจารณาลงทุนแบบ Dollar Cost Averaging</li>
+                            <li>ติดตามผลการดำเนินงานรายไตรมาส</li>
+                          </ul>
+                        </>
+                      );
+                    } else if (finalScore >= 60) {
+                      return (
+                        <>
+                          <div className="font-medium text-blue-700 dark:text-blue-300">
+                            📈 หุ้นนี้มีปัจจัยบวก แต่ควรพิจารณาอย่างรอบคอบ
+                          </div>
+                          <ul className="list-disc list-inside space-y-1 text-indigo-700 dark:text-indigo-300 ml-4">
+                            <li>เหมาะสำหรับนักลงทุนที่มีประสบการณ์</li>
+                            <li>ควรศึกษาข้อมูลเพิ่มเติมก่อนตัดสินใจ</li>
+                            <li>
+                              พิจารณาเปรียบเทียบกับหุ้นอื่นในอุตสาหกรรมเดียวกัน
+                            </li>
+                          </ul>
+                        </>
+                      );
+                    } else if (finalScore >= 40) {
+                      return (
+                        <>
+                          <div className="font-medium text-yellow-700 dark:text-yellow-300">
+                            ⚡ หุ้นนี้มีความเสี่ยงปานกลาง แนะนำให้รอดูสถานการณ์
+                          </div>
+                          <ul className="list-disc list-inside space-y-1 text-indigo-700 dark:text-indigo-300 ml-4">
+                            <li>รอดูผลการดำเนินงานในไตรมาสถัดไป</li>
+                            <li>ติดตามข่าวสารและการเปลี่ยนแปลงของบริษัท</li>
+                            <li>พิจารณาลงทุนเมื่อมีปัจจัยบวกเพิ่มขึ้น</li>
+                          </ul>
+                        </>
+                      );
+                    } else {
+                      return (
+                        <>
+                          <div className="font-medium text-red-700 dark:text-red-300">
+                            ⚠️ หุ้นนี้มีความเสี่ยงสูง ไม่แนะนำให้ลงทุนในขณะนี้
+                          </div>
+                          <ul className="list-disc list-inside space-y-1 text-indigo-700 dark:text-indigo-300 ml-4">
+                            <li>หลีกเลี่ยงการลงทุนจนกว่าจะมีการปรับปรุง</li>
+                            <li>ติดตามการเปลี่ยนแปลงของธุรกิจ</li>
+                            <li>พิจารณาหุ้นอื่นที่มีความเสี่ยงต่ำกว่า</li>
+                          </ul>
+                        </>
+                      );
+                    }
+                  })()}
+                </div>
+              </div>
+
+              {/* Disclaimer */}
+              <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg border text-xs text-muted-foreground">
+                <strong>คำเตือน:</strong>{" "}
+                การวิเคราะห์นี้เป็นเพียงข้อมูลเพื่อการศึกษาเท่านั้น
+                ไม่ใช่คำแนะนำการลงทุน
+                ผู้ลงทุนควรศึกษาข้อมูลเพิ่มเติมและปรึกษาผู้เชี่ยวชาญก่อนตัดสินใจลงทุน
+                การลงทุนมีความเสี่ยง
+                ผู้ลงทุนอาจได้รับผลตอบแทนน้อยกว่าเงินลงทุนเริ่มแรก
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
       <MetricsLegend />
     </div>
   );
