@@ -1774,9 +1774,10 @@ export default function StockDashboard({ symbol }: StockDashboardProps) {
           </div>
 
           {/* Technical Analysis Legend */}
-          <MetricsLegend />
         </TabsContent>
       </Tabs>
+
+      <MetricsLegend />
     </div>
   );
 }
