@@ -204,11 +204,11 @@ export default function StockDashboard({ symbol }: StockDashboardProps) {
         level: "ไม่จ่ายปันผล",
         color: "text-gray-600 dark:text-gray-400",
       };
-    if (yield_ < 0.02)
+    if (yield_ < 2)
       return { level: "ต่ำ", color: "text-yellow-600 dark:text-yellow-400" };
-    if (yield_ <= 0.04)
+    if (yield_ <= 4)
       return { level: "ปานกลาง", color: "text-green-600 dark:text-green-400" };
-    if (yield_ <= 0.06)
+    if (yield_ <= 6)
       return { level: "สูง", color: "text-blue-600 dark:text-blue-400" };
     return {
       level: "สูงมาก/ต้องระวัง",
@@ -723,10 +723,9 @@ export default function StockDashboard({ symbol }: StockDashboardProps) {
                           >
                             {companyData?.quoteSummary?.summaryDetail
                               ?.dividendYield
-                              ? `${(
-                                  companyData.quoteSummary.summaryDetail
-                                    .dividendYield * 100
-                                ).toFixed(2)}%`
+                              ? `${companyData.quoteSummary.summaryDetail.dividendYield.toFixed(
+                                  2
+                                )}%`
                               : "N/A"}
                           </div>
                           <div className="text-xs text-muted-foreground">
@@ -909,9 +908,7 @@ export default function StockDashboard({ symbol }: StockDashboardProps) {
                       </div>
                       <div className="text-2xl font-bold mb-1">
                         {companyData?.quote?.dividendYield
-                          ? `${(companyData.quote.dividendYield * 100).toFixed(
-                              2
-                            )}%`
+                          ? `${companyData.quote.dividendYield.toFixed(2)}%`
                           : "N/A"}
                       </div>
                       <div className="text-sm text-muted-foreground">
@@ -1324,7 +1321,8 @@ export default function StockDashboard({ symbol }: StockDashboardProps) {
                   const concerns = [];
 
                   // Revenue Growth (20% weight)
-                  const revenueGrowth = companyData?.quoteSummary?.financialData?.revenueGrowth;
+                  const revenueGrowth =
+                    companyData?.quoteSummary?.financialData?.revenueGrowth;
                   if (revenueGrowth !== undefined) {
                     if (revenueGrowth > 0.2) {
                       scores.revenueGrowth = 100;
@@ -1342,7 +1340,8 @@ export default function StockDashboard({ symbol }: StockDashboardProps) {
                   }
 
                   // Profit Growth (20% weight)
-                  const earningsGrowth = companyData?.quoteSummary?.financialData?.earningsGrowth;
+                  const earningsGrowth =
+                    companyData?.quoteSummary?.financialData?.earningsGrowth;
                   if (earningsGrowth !== undefined) {
                     if (earningsGrowth > 0.15) {
                       scores.profitGrowth = 100;
@@ -1360,7 +1359,9 @@ export default function StockDashboard({ symbol }: StockDashboardProps) {
                   }
 
                   // PE Ratio (20% weight)
-                  const peRatio = companyData?.quote?.trailingPE || companyData?.quoteSummary?.defaultKeyStatistics?.trailingPE;
+                  const peRatio =
+                    companyData?.quote?.trailingPE ||
+                    companyData?.quoteSummary?.defaultKeyStatistics?.trailingPE;
                   if (peRatio !== undefined) {
                     if (peRatio < 15) {
                       scores.peRatio = 90;
@@ -1378,9 +1379,12 @@ export default function StockDashboard({ symbol }: StockDashboardProps) {
                   }
 
                   // PS Ratio (15% weight)
-                  const psRatio = companyData?.quote?.priceToSalesTrailing12Months ||
-                    (stockData.marketCap && companyData?.quoteSummary?.financialData?.totalRevenue
-                      ? stockData.marketCap / companyData.quoteSummary.financialData.totalRevenue
+                  const psRatio =
+                    companyData?.quote?.priceToSalesTrailing12Months ||
+                    (stockData.marketCap &&
+                    companyData?.quoteSummary?.financialData?.totalRevenue
+                      ? stockData.marketCap /
+                        companyData.quoteSummary.financialData.totalRevenue
                       : undefined);
                   if (psRatio !== undefined) {
                     if (psRatio < 2) {
@@ -1416,19 +1420,23 @@ export default function StockDashboard({ symbol }: StockDashboardProps) {
                   }
 
                   // Dividend Yield (10% weight)
-                  const dividendYield = companyData?.quoteSummary?.summaryDetail?.dividendYield || companyData?.quote?.dividendYield;
+                  const dividendYield =
+                    companyData?.quoteSummary?.summaryDetail?.dividendYield ||
+                    companyData?.quote?.dividendYield;
                   if (dividendYield !== undefined) {
-                    if (dividendYield >= 0.04 && dividendYield <= 0.06) {
+                    if (dividendYield >= 4 && dividendYield <= 6) {
                       scores.dividend = 85;
                       strengths.push("อัตราปันผลดี (4-6%)");
-                    } else if (dividendYield >= 0.02 && dividendYield < 0.04) {
+                    } else if (dividendYield >= 2 && dividendYield < 4) {
                       scores.dividend = 75;
                       strengths.push("อัตราปันผลปานกลาง (2-4%)");
-                    } else if (dividendYield < 0.02) {
+                    } else if (dividendYield < 2) {
                       scores.dividend = 70;
                     } else {
                       scores.dividend = 40;
-                      concerns.push("อัตราปันผลสูงมาก (>6%) - ควรตรวจสอบความยั่งยืน");
+                      concerns.push(
+                        "อัตราปันผลสูงมาก (>6%) - ควรตรวจสอบความยั่งยืน"
+                      );
                     }
                     totalScore += scores.dividend * 0.1;
                   }
@@ -1436,7 +1444,8 @@ export default function StockDashboard({ symbol }: StockDashboardProps) {
                   return { totalScore, scores, strengths, concerns };
                 };
 
-                const { totalScore, scores, strengths, concerns } = calculateScore();
+                const { totalScore, scores, strengths, concerns } =
+                  calculateScore();
 
                 // Determine recommendation
                 let recommendation = "ไม่แนะนำ";
@@ -1445,7 +1454,8 @@ export default function StockDashboard({ symbol }: StockDashboardProps) {
 
                 if (totalScore >= 80) {
                   recommendation = "แนะนำซื้อขอ";
-                  recommendationColor = "text-emerald-600 dark:text-emerald-400";
+                  recommendationColor =
+                    "text-emerald-600 dark:text-emerald-400";
                   recommendationIcon = "🚀";
                 } else if (totalScore >= 60) {
                   recommendation = "พิจารณาซื้อ";
@@ -1463,9 +1473,13 @@ export default function StockDashboard({ symbol }: StockDashboardProps) {
                     <div className="p-6 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-950/30 dark:to-purple-950/30 rounded-lg border border-indigo-200 dark:border-indigo-800">
                       <div className="text-center mb-4">
                         <div className="text-4xl font-bold mb-2">
-                          <span className={recommendationColor}>{totalScore.toFixed(0)}%</span>
+                          <span className={recommendationColor}>
+                            {totalScore.toFixed(0)}%
+                          </span>
                         </div>
-                        <div className={`text-lg font-semibold ${recommendationColor} flex items-center justify-center gap-2`}>
+                        <div
+                          className={`text-lg font-semibold ${recommendationColor} flex items-center justify-center gap-2`}
+                        >
                           <span className="text-2xl">{recommendationIcon}</span>
                           {recommendation}
                         </div>
@@ -1479,37 +1493,49 @@ export default function StockDashboard({ symbol }: StockDashboardProps) {
                         {scores.revenueGrowth !== undefined && (
                           <div className="p-2 bg-white/50 dark:bg-slate-800/50 rounded">
                             <div className="font-medium">การเติบโตรายได้</div>
-                            <div className="text-blue-600 font-semibold">{scores.revenueGrowth}/100 (20%)</div>
+                            <div className="text-blue-600 font-semibold">
+                              {scores.revenueGrowth}/100 (20%)
+                            </div>
                           </div>
                         )}
                         {scores.profitGrowth !== undefined && (
                           <div className="p-2 bg-white/50 dark:bg-slate-800/50 rounded">
                             <div className="font-medium">การเติบโตกำไร</div>
-                            <div className="text-blue-600 font-semibold">{scores.profitGrowth}/100 (20%)</div>
+                            <div className="text-blue-600 font-semibold">
+                              {scores.profitGrowth}/100 (20%)
+                            </div>
                           </div>
                         )}
                         {scores.peRatio !== undefined && (
                           <div className="p-2 bg-white/50 dark:bg-slate-800/50 rounded">
                             <div className="font-medium">ความคุ้มค่า (PE)</div>
-                            <div className="text-blue-600 font-semibold">{scores.peRatio}/100 (20%)</div>
+                            <div className="text-blue-600 font-semibold">
+                              {scores.peRatio}/100 (20%)
+                            </div>
                           </div>
                         )}
                         {scores.psRatio !== undefined && (
                           <div className="p-2 bg-white/50 dark:bg-slate-800/50 rounded">
                             <div className="font-medium">ความคุ้มค่า (PS)</div>
-                            <div className="text-blue-600 font-semibold">{scores.psRatio}/100 (15%)</div>
+                            <div className="text-blue-600 font-semibold">
+                              {scores.psRatio}/100 (15%)
+                            </div>
                           </div>
                         )}
                         {scores.eps !== undefined && (
                           <div className="p-2 bg-white/50 dark:bg-slate-800/50 rounded">
                             <div className="font-medium">กำไรต่อหุ้น</div>
-                            <div className="text-blue-600 font-semibold">{scores.eps}/100 (15%)</div>
+                            <div className="text-blue-600 font-semibold">
+                              {scores.eps}/100 (15%)
+                            </div>
                           </div>
                         )}
                         {scores.dividend !== undefined && (
                           <div className="p-2 bg-white/50 dark:bg-slate-800/50 rounded">
                             <div className="font-medium">อัตราปันผล</div>
-                            <div className="text-blue-600 font-semibold">{scores.dividend}/100 (10%)</div>
+                            <div className="text-blue-600 font-semibold">
+                              {scores.dividend}/100 (10%)
+                            </div>
                           </div>
                         )}
                       </div>
@@ -1526,7 +1552,10 @@ export default function StockDashboard({ symbol }: StockDashboardProps) {
                         {strengths.length > 0 ? (
                           <ul className="space-y-2 text-sm text-green-700 dark:text-green-300">
                             {strengths.map((strength, index) => (
-                              <li key={index} className="flex items-start gap-2">
+                              <li
+                                key={index}
+                                className="flex items-start gap-2"
+                              >
                                 <span className="text-green-500 mt-0.5">✓</span>
                                 {strength}
                               </li>
@@ -1548,7 +1577,10 @@ export default function StockDashboard({ symbol }: StockDashboardProps) {
                         {concerns.length > 0 ? (
                           <ul className="space-y-2 text-sm text-red-700 dark:text-red-300">
                             {concerns.map((concern, index) => (
-                              <li key={index} className="flex items-start gap-2">
+                              <li
+                                key={index}
+                                className="flex items-start gap-2"
+                              >
                                 <span className="text-red-500 mt-0.5">⚠</span>
                                 {concern}
                               </li>
@@ -1584,7 +1616,10 @@ export default function StockDashboard({ symbol }: StockDashboardProps) {
                       }
                     >
                       {companyData?.quoteSummary?.financialData?.revenueGrowth
-                        ? `${(companyData.quoteSummary.financialData.revenueGrowth * 100).toFixed(2)}%`
+                        ? `${(
+                            companyData.quoteSummary.financialData
+                              .revenueGrowth * 100
+                          ).toFixed(2)}%`
                         : "N/A"}
                     </div>
                   </div>
@@ -1608,9 +1643,11 @@ export default function StockDashboard({ symbol }: StockDashboardProps) {
                       {companyData?.quote?.trailingPE ||
                       companyData?.quoteSummary?.defaultKeyStatistics
                         ?.trailingPE
-                        ? `${(companyData?.quote?.trailingPE ||
-                              companyData?.quoteSummary?.defaultKeyStatistics
-                                ?.trailingPE).toFixed(2)}x`
+                        ? `${(
+                            companyData?.quote?.trailingPE ||
+                            companyData?.quoteSummary?.defaultKeyStatistics
+                              ?.trailingPE
+                          ).toFixed(2)}x`
                         : "N/A"}
                     </div>
                   </div>
