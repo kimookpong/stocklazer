@@ -157,10 +157,10 @@ export default function HomePage() {
             </div>
             <div>
               <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                Stock Analyzer
+                Stocklazer
               </h1>
               <p className="text-sm text-muted-foreground">
-                Data from{" "}
+                📈{" "}
                 <a
                   href="https://finance.yahoo.com/"
                   target="_blank"
@@ -169,7 +169,7 @@ export default function HomePage() {
                 >
                   Yahoo Finance
                 </a>{" "}
-                | Analyze by{" "}
+                | 👨‍💻{" "}
                 <a
                   href="https://kimookpong.vercel.app/"
                   target="_blank"
@@ -185,7 +185,7 @@ export default function HomePage() {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto p-4">
         {/* Hero Section */}
         {!selectedStock && (
           <div className="text-center mb-12">
@@ -282,14 +282,6 @@ export default function HomePage() {
                     </div>
                   )}
                 </div>
-                <Button
-                  type="submit"
-                  size="lg"
-                  className="h-12 px-8 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
-                >
-                  <Search className="h-4 w-4 mr-2" />
-                  ค้นหา
-                </Button>
               </div>
             </form>
           </CardContent>
