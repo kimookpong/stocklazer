@@ -445,7 +445,7 @@ export default function StockDashboard({ symbol }: StockDashboardProps) {
             <CardHeader>
               <CardTitle>กราฟราคาหุ้น {symbol}</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-0">
               {historicalData && (
                 <StockChart
                   data={historicalData.map((item: any) => ({
