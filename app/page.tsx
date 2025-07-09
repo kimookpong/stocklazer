@@ -3,6 +3,7 @@
 import type React from "react";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import {
   Search,
   TrendingUp,
@@ -152,9 +153,14 @@ export default function HomePage() {
             className="flex items-center gap-3 cursor-pointer"
             onClick={handleBackToHome}
           >
-            <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl">
-              <TrendingUp className="h-6 w-6 text-white" />
-            </div>
+            <Image
+              src="/logo.png"
+              alt="Stocklazer Logo"
+              width={32}
+              height={32}
+              className="h-12 w-12"
+            />
+
             <div>
               <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
                 Stocklazer
