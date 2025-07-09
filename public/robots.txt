@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://stocklazer.com/sitemap.xml
+
+# Disallow specific paths if needed
+# Disallow: /api/
+# Disallow: /admin/
+
+# Allow search engines to crawl all content
+Crawl-delay: 1
