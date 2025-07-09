@@ -35,7 +35,7 @@ export const metadata: Metadata = {
     siteName: "Stocklazer",
     images: [
       {
-        url: "/logo.png",
+        url: "/promo.png",
         width: 1200,
         height: 630,
         alt: "Stocklazer - US Stock Analyzer",
@@ -47,7 +47,7 @@ export const metadata: Metadata = {
     title: "Stocklazer : US Stock Analyzer",
     description: "วิเคราะห์หุ้นอเมริกาแบบครบครัน พร้อมกราฟและข้อมูลทางการเงิน",
     creator: "@stocklazer",
-    images: ["/logo.png"],
+    images: ["/promo.png"],
   },
   robots: {
     index: true,
