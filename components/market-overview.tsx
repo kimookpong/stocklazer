@@ -240,10 +240,7 @@ export default function MarketOverview({ onStockSelect }: MarketOverviewProps) {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {[1, 2, 3].map((i) => (
-            <Card
-              key={i}
-              className="border-0 bg-white/60 dark:bg-slate-900/60 backdrop-blur-sm"
-            >
+            <Card key={i} className="border-0 bg-white/60 dark:bg-slate-900/60">
               <CardHeader>
                 <Skeleton className="h-6 w-32" />
                 <Skeleton className="h-4 w-48" />
@@ -309,7 +306,7 @@ export default function MarketOverview({ onStockSelect }: MarketOverviewProps) {
       {marketData ? (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Top Gainers */}
-          <Card className="border-0 bg-white/60 dark:bg-slate-900/60 backdrop-blur-sm">
+          <Card className="border-0 bg-white/60 dark:bg-slate-900/60">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-green-600 dark:text-green-400">
                 <TrendingUp className="h-5 w-5" />
@@ -330,7 +327,7 @@ export default function MarketOverview({ onStockSelect }: MarketOverviewProps) {
           </Card>
 
           {/* Top Losers */}
-          <Card className="border-0 bg-white/60 dark:bg-slate-900/60 backdrop-blur-sm">
+          <Card className="border-0 bg-white/60 dark:bg-slate-900/60">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-red-600 dark:text-red-400">
                 <TrendingDown className="h-5 w-5" />
@@ -351,7 +348,7 @@ export default function MarketOverview({ onStockSelect }: MarketOverviewProps) {
           </Card>
 
           {/* Most Active */}
-          <Card className="border-0 bg-white/60 dark:bg-slate-900/60 backdrop-blur-sm">
+          <Card className="border-0 bg-white/60 dark:bg-slate-900/60">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-blue-600 dark:text-blue-400">
                 <Activity className="h-5 w-5" />
