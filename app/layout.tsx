@@ -24,11 +24,11 @@ export const metadata: Metadata = {
   authors: [{ name: "Hakim Mudor" }],
   creator: "Hakim Mudor",
   publisher: "Stocklazer",
-  metadataBase: new URL("https://stocklazer.com"),
+  metadataBase: new URL("https://stocklazer.vercel.app"),
   openGraph: {
     type: "website",
     locale: "th_TH",
-    url: "https://stocklazer.com",
+    url: "https://stocklazer.vercel.app",
     title: "Stocklazer : US Stock Analyzer",
     description:
       "US Stock Analyzer ค้นหาและวิเคราะห์ข้อมูลหุ้นอเมริกาแบบครบครัน พร้อมกราฟและข้อมูลทางการเงินที่ละเอียด",
@@ -75,7 +75,7 @@ export default function RootLayout({
       <head>
         <link rel="icon" href="/logo.png" sizes="any" />
         <link rel="apple-touch-icon" href="/logo.png" />
-        <link rel="canonical" href="https://stocklazer.com" />
+        <link rel="canonical" href="https://stocklazer.vercel.app" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -85,7 +85,7 @@ export default function RootLayout({
               name: "Stocklazer - US Stock Analyzer",
               description:
                 "US Stock Analyzer ค้นหาและวิเคราะห์ข้อมูลหุ้นอเมริกาแบบครบครัน พร้อมกราฟและข้อมูลทางการเงินที่ละเอียด",
-              url: "https://stocklazer.com",
+              url: "https://stocklazer.vercel.app",
               applicationCategory: "FinanceApplication",
               operatingSystem: "Web Browser",
               offers: {
