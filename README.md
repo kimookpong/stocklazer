@@ -55,18 +55,6 @@ npm run dev
 
 This application uses the Yahoo Finance API through the `yahoo-finance2` library, which doesn't require an API key and provides free access to real-time stock data.
 
-## Deployment
-
-Your project is live at:
-
-**[https://vercel.com/kimookpongs-projects/v0-thai-stock-app](https://vercel.com/kimookpongs-projects/v0-thai-stock-app)**
-
-## Build your app
-
-Continue building your app on:
-
-**[https://v0.dev/chat/projects/wYDuUnzNbTu](https://v0.dev/chat/projects/wYDuUnzNbTu)**
-
 ## How It Works
 
 1. Create and modify your project using [v0.dev](https://v0.dev)
