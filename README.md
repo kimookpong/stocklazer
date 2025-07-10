@@ -20,7 +20,6 @@ A modern stock analysis application that provides real-time stock data, technica
 - **Styling**: Tailwind CSS, Radix UI
 - **Charts**: Recharts
 - **Data Source**: Yahoo Finance API via yahoo-finance2
-- **Deployment**: Vercel
 
 ## Installation
 
