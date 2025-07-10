@@ -54,10 +54,3 @@ npm run dev
 ## API
 
 This application uses the Yahoo Finance API through the `yahoo-finance2` library, which doesn't require an API key and provides free access to real-time stock data.
-
-## How It Works
-
-1. Create and modify your project using [v0.dev](https://v0.dev)
-2. Deploy your chats from the v0 interface
-3. Changes are automatically pushed to this repository
-4. Vercel deploys the latest version from this repository
