@@ -242,6 +242,13 @@ export default function HomePage() {
                       <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>
                     </div>
                   )}
+                  {suggestions.length === 0 &&
+                    !isSearching &&
+                    searchTerm.length > 1 && (
+                      <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-sm text-muted-foreground">
+                        ไม่พบข้อมูลหุ้นที่ตรงกับ "{searchTerm}"
+                      </div>
+                    )}
                   {showSuggestions && suggestions.length > 0 && (
                     <div className="absolute top-full left-0 right-0 bg-white dark:bg-slate-900 border-2 border-gray-200 dark:border-slate-700 rounded-lg shadow-2xl z-[9999] max-h-80 overflow-y-auto mt-1">
                       {suggestions.map((stock, index) => (
