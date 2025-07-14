@@ -18,6 +18,7 @@ export async function GET(request: Request) {
 
     // Filter เฉพาะหุ้นที่เป็น equity และ US market
     const stocks = searchResults.quotes
+      .filter((quote: any) => quote.symbol)
       .map((quote: any) => ({
         symbol: quote.symbol,
         name: quote.longname || quote.shortname || quote.symbol,
