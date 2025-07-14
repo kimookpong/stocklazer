@@ -16,6 +16,14 @@ export async function GET(request: Request) {
       newsCount: 0, // ไม่ต้องการข่าว
     });
 
+    // Filter เฉพาะหุ้นที่เป็น US หรือ THAI market
+    searchResults.quotes = searchResults.quotes.filter(
+      (quote: any) =>
+        quote.exchange === "NYQ" || // NYSE (US)
+        quote.exchange === "NMS" || // NASDAQ (US)
+        quote.exchange === "THA" // SET (Thailand)
+    );
+
     // Filter เฉพาะหุ้นที่เป็น equity และ US market
     const stocks = searchResults.quotes
       .filter((quote: any) => quote.symbol)
