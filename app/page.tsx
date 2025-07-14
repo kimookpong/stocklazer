@@ -198,11 +198,11 @@ export default function HomePage() {
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500/10 to-indigo-500/10 rounded-full border border-blue-200 dark:border-blue-800 mb-6">
               <Sparkles className="h-4 w-4 text-blue-600 dark:text-blue-400" />
               <span className="text-sm font-medium text-blue-600 dark:text-blue-400">
-                Real-time US Stock Analysis
+                Real-time US-TH Stock Analysis
               </span>
             </div>
             <h1 className="text-5xl font-bold bg-gradient-to-r from-slate-900 via-blue-800 to-indigo-800 dark:from-white dark:via-blue-200 dark:to-indigo-200 bg-clip-text text-transparent mb-4">
-              US Stock Analyzer
+              Stocklazer
             </h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               ค้นหาและวิเคราะห์ข้อมูลหุ้นอเมริกาแบบครบครัน

@@ -8,16 +8,16 @@ import { Toaster } from "@/components/toaster";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Stocklazer : US Stock Analyzer",
+  title: "Stocklazer : US-TH Stock Analyzer",
   description:
-    "US Stock Analyzer ค้นหาและวิเคราะห์ข้อมูลหุ้นอเมริกาแบบครบครัน พร้อมกราฟและข้อมูลทางการเงินที่ละเอียด",
+    "US-TH Stock Analyzer ค้นหาและวิเคราะห์ข้อมูลหุ้นอเมริกาแบบครบครัน พร้อมกราฟและข้อมูลทางการเงินที่ละเอียด",
   generator: "Hakim Mudor",
   keywords: [
     "หุ้น",
     "หุ้นอเมริกา",
     "การลงทุน",
     "วิเคราะห์หุ้น",
-    "US Stock",
+    "US-TH Stock",
     "Stock Analysis",
     "Investment",
   ],
@@ -31,20 +31,20 @@ export const metadata: Metadata = {
     url: "https://stocklazer.vercel.app",
     title: "Stocklazer : US Stock Analyzer",
     description:
-      "US Stock Analyzer ค้นหาและวิเคราะห์ข้อมูลหุ้นอเมริกาแบบครบครัน พร้อมกราฟและข้อมูลทางการเงินที่ละเอียด",
+      "US-TH Stock Analyzer ค้นหาและวิเคราะห์ข้อมูลหุ้นอเมริกาแบบครบครัน พร้อมกราฟและข้อมูลทางการเงินที่ละเอียด",
     siteName: "Stocklazer",
     images: [
       {
         url: "/promo.png",
         width: 1200,
         height: 630,
-        alt: "Stocklazer - US Stock Analyzer",
+        alt: "Stocklazer - US-TH Stock Analyzer",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Stocklazer : US Stock Analyzer",
+    title: "Stocklazer : US-TH Stock Analyzer",
     description: "วิเคราะห์หุ้นอเมริกาแบบครบครัน พร้อมกราฟและข้อมูลทางการเงิน",
     creator: "@stocklazer",
     images: ["/promo.png"],
