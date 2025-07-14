@@ -1,10 +1,4 @@
 # US Stock Analyzer
-
-_Automatically synced with your [v0.dev](https://v0.dev) deployments_
-
-[![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com/kimookpongs-projects/v0-thai-stock-app)
-[![Built with v0](https://img.shields.io/badge/Built%20with-v0.dev-black?style=for-the-badge)](https://v0.dev/chat/projects/wYDuUnzNbTu)
-
 ## Overview
 
 A modern stock analysis application that provides real-time stock data, technical indicators, and market insights using Yahoo Finance API.
@@ -26,7 +20,6 @@ A modern stock analysis application that provides real-time stock data, technica
 - **Styling**: Tailwind CSS, Radix UI
 - **Charts**: Recharts
 - **Data Source**: Yahoo Finance API via yahoo-finance2
-- **Deployment**: Vercel
 
 ## Installation
 
@@ -54,22 +47,3 @@ npm run dev
 ## API
 
 This application uses the Yahoo Finance API through the `yahoo-finance2` library, which doesn't require an API key and provides free access to real-time stock data.
-
-## Deployment
-
-Your project is live at:
-
-**[https://vercel.com/kimookpongs-projects/v0-thai-stock-app](https://vercel.com/kimookpongs-projects/v0-thai-stock-app)**
-
-## Build your app
-
-Continue building your app on:
-
-**[https://v0.dev/chat/projects/wYDuUnzNbTu](https://v0.dev/chat/projects/wYDuUnzNbTu)**
-
-## How It Works
-
-1. Create and modify your project using [v0.dev](https://v0.dev)
-2. Deploy your chats from the v0 interface
-3. Changes are automatically pushed to this repository
-4. Vercel deploys the latest version from this repository
